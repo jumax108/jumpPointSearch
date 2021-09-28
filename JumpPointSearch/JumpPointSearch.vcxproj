@@ -146,6 +146,7 @@
     <ClInclude Include="JumpPointSearch.h" />
     <ClInclude Include="myLinkedList.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SimpleProfiler.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

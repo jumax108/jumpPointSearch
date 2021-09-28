@@ -1,5 +1,6 @@
 ﻿
 #include "framework.h"
+#include "SimpleProfiler.h"
 #include "myLinkedList.h"
 #include "JumpPointSearch.h"
 
@@ -32,8 +33,6 @@ CJumpPointSearch::CJumpPointSearch(int width, int height) {
 
 	_end._x = -1;
 	_end._y = -1;
-
-	srand(992);
 
 }
 
@@ -74,6 +73,10 @@ void CJumpPointSearch::makeNode(stCoord* corner, stNode* parent) {
 
 CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 
+	#ifdef SPEED_TEST
+	sp->profileBegin("singleLoop");
+	#endif
+
 	linkedList<stNode*>::iterator minIter = *findMin(_openList);
 	stNode* selectNode = *minIter;
 	_openList->erase(minIter);
@@ -82,6 +85,10 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 	stCoord* coord = selectNode->_coord;
 
 	if (coord->_y == _end._y && coord->_x == _end._x) {
+
+		#ifdef SPEED_TEST
+		sp->profileEnd("singleLoop");
+		#endif
 		return selectNode;
 	}
 
@@ -394,14 +401,23 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 
 	if (_openList->empty() == false) {
 		// 아직 확인할 노드가 남음
+		#ifdef SPEED_TEST
+		sp->profileEnd("singleLoop");
+		#endif
 		return (stNode*)1;
 	}
 
+	#ifdef SPEED_TEST
+	sp->profileEnd("singleLoop");
+	#endif
 	return nullptr;
 }
 
 CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int y, int x, const stRGB* color) {
 
+	#ifdef SPEED_TEST
+	sp->profileBegin("checkOrthogonal");
+	#endif
 	int tyArr[4] = { 0,0,-1,1 };
 	int txArr[4] = { -1,1,0,0 };
 
@@ -416,11 +432,17 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 
 		if (y < 0 || x < 0 || y >= _height || x >= _width) {
 			// 맵 끝까지 감
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkOrthogonal");
+			#endif
 			return nullptr;
 		}
 
 		if (*map(y, x) == MAP_STATE::WALL) {
 			// 길 막힘
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkOrthogonal");
+			#endif
 			return nullptr;
 		}
 
@@ -431,6 +453,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 
 		if (y == _end._y && x == _end._x) {
 			// 목표지점 발견
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkOrthogonal");
+			#endif
 			return new stCoord(y, x, dir);
 		}
 
@@ -453,6 +478,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 
 			if (*map(y + tx, x + ty) == MAP_STATE::WALL && *map(y + tx + ty, x + ty + tx) == MAP_STATE::ROAD) {
 				// 코너 발견
+				#ifdef SPEED_TEST
+				sp->profileEnd("checkOrthogonal");
+				#endif
 				return new stCoord(y, x, dir);
 			}
 		}
@@ -465,17 +493,26 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 
 			if (*map(y - tx, x - ty) == MAP_STATE::WALL && *map(y - tx + ty, x - ty + tx) == MAP_STATE::ROAD) {
 				// 코너 발견
+				#ifdef SPEED_TEST
+				sp->profileEnd("checkOrthogonal");
+				#endif
 				return new stCoord(y, x, dir);
 			}
 		}
 
 	}
 
+	#ifdef SPEED_TEST
+	sp->profileEnd("checkOrthogonal");
+	#endif
 	return nullptr;
 }
 
 CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y, int x, const stRGB* color) {
 
+	#ifdef SPEED_TEST
+	sp->profileBegin("checkDiagonal");
+	#endif
 	int tyArr[4] = {-1, -1, 1, 1};
 	int txArr[4] = {-1, 1, -1, 1};
 
@@ -506,11 +543,17 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 
 		if (y < 0 || x < 0 || y >= _height || x >= _width) {
 			// 맵 끝까지 감
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkDiagonal");
+			#endif
 			return nullptr;
 		}
 
 		if (*map(y, x) == MAP_STATE::WALL) {
 			// 길 막힘
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkDiagonal");
+			#endif
 			return nullptr;
 		}
 
@@ -520,6 +563,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 		pMapColor->green = color->green;
 		if (y == _end._y && x == _end._x) {
 			// 목표지점 발견
+			#ifdef SPEED_TEST
+			sp->profileEnd("checkDiagonal");
+			#endif
 			return new stCoord(y, x, dir);
 		}
 
@@ -529,6 +575,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			if (lineCheckResult != nullptr) {
 				stCoord* result = new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 				delete(lineCheckResult);
+				#ifdef SPEED_TEST
+				sp->profileEnd("checkDiagonal");
+				#endif		
 				return result;
 			}
 		}
@@ -551,6 +600,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			0 <= x + tx && x + tx <  _width) {
 			if ((*map(y - ty, x) == MAP_STATE::WALL && *map(y - ty, x + tx) == MAP_STATE::ROAD)) {
 				// 대각선 이동 중 코너 발견함
+				#ifdef SPEED_TEST
+				sp->profileEnd("checkDiagonal");
+				#endif		
 				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 			}
 		}
@@ -559,6 +611,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			0 <= y + ty && y + ty < _height) {
 			if (*map(y, x - tx) == MAP_STATE::WALL && *map(y + ty, x - tx) == MAP_STATE::ROAD) {
 				// 대각선 이동 중 코너 발견함
+				#ifdef SPEED_TEST
+				sp->profileEnd("checkDiagonal");
+				#endif		
 				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 			}
 		}
@@ -566,6 +621,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 
 	}
 
+	#ifdef SPEED_TEST
+	sp->profileEnd("checkDiagonal");
+	#endif
 	return nullptr;
 }
 
@@ -1187,6 +1245,9 @@ CJumpPointSearch::iterator CJumpPointSearch::makePath(stNode* endNode) {
 
 CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw) {
 
+	#ifdef SPEED_TEST
+	sp->profileBegin("lineTo");
+	#endif
 	_line->clear();
 
 	stCoord absDistance(abs(ey - sy) + 1, abs(ex - sx) + 1);
@@ -1394,11 +1455,17 @@ CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int 
 		}
 	}
 
+	#ifdef SPEED_TEST
+	sp->profileEnd("lineTo");
+	#endif
 	return lineBegin();
 }
 
 void CJumpPointSearch::nodeSkip() {
 
+	#ifdef SPEED_TEST
+	sp->profileBegin("nodeSkip");
+	#endif
 	for (iterator startNodeIter = pathBegin(); startNodeIter != pathEnd(); ++startNodeIter) {
 
 		linkedList<stCoord*> changeLineNodeCoord;
@@ -1493,5 +1560,7 @@ void CJumpPointSearch::nodeSkip() {
 		
 
 	}
-
+	#ifdef SPEED_TEST
+	sp->profileEnd("nodeSkip");
+	#endif
 }

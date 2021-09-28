@@ -2,6 +2,7 @@
 //
 
 #include "framework.h"
+#include "SimpleProfiler.h"
 #include "Resource.h"
 #include "myLinkedList.h"
 #include "JumpPointSearch.h"
@@ -9,6 +10,10 @@
 #define MAX_LOADSTRING 100
 
 CJumpPointSearch* jps;
+
+#ifdef SPEED_TEST
+SimpleProfiler* sp = new SimpleProfiler();
+#endif
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -277,11 +282,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case 't':
             {
-                for (int testCnt = 0; testCnt < 30; ++testCnt) {
+                #ifdef SPEED_TEST
+                srand(1008);
+                delete(sp);
+                sp = new SimpleProfiler();
+                #endif
+                for (int testCnt = 0; testCnt < 100; ++testCnt) {
                     WCHAR fileName[50];
                     swprintf_s(fileName, 50, L".\\testImage\\%04d.bmp", testCnt);
+
+                    #ifdef SPEED_TEST
+                    sp->profileBegin("JumpPointSearch");
+                    #endif
+
                     CJumpPointSearch::test(fileName);
+
+                    #ifdef SPEED_TEST
+                    sp->profileEnd("JumpPointSearch");
+                    #endif
                 }
+
+                #ifdef SPEED_TEST
+                sp->printToFile();
+                #endif
                 MessageBoxW(hWnd, L"테스트 끝 !", L"JumpPointSearch", MB_OK);
             }
                 break;
@@ -308,7 +331,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     int top = (*iter)->_coord->_y * blockSize + 1;
                     int right = left + blockSize - 1;
                     int bottom = top + blockSize - 1;
-                 //   Rectangle(hdc, left, top, right, bottom);
+                    //Rectangle(hdc, left, top, right, bottom);
                 }
 
                 SelectObject(hdc, hOldBrush);
