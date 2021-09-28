@@ -285,6 +285,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 MessageBoxW(hWnd, L"테스트 끝 !", L"JumpPointSearch", MB_OK);
             }
                 break;
+            case 'b':
+                jps->printToBitmap(L"result.bmp", 20, *endNodeIter);
+                MessageBoxW(hWnd, L"비트맵 출력 완료", L"JumpPointSearch", MB_OK);
+                break;
             case 'p':
             {
                 jps->lineTo(jps->_start._x, jps->_start._y, jps->_end._x, jps->_end._y, true);
