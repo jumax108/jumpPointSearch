@@ -984,6 +984,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 	
 	stReverseRGB* singleRgb = rgbData;
 
+	// 기본 맵 출력
 	for (int heightCnt = _height - 1; heightCnt >= 0; --heightCnt) {
 		for (int heightRatioCnt = 0; heightRatioCnt < printRatio; ++heightRatioCnt) {
 			for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
@@ -1010,6 +1011,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 	}
 
 	singleRgb = rgbData;
+
 	// 탐색 경로 출력
 	for (int heightCnt = _height - 1; heightCnt >= 0; --heightCnt) {
 		for (int heightRatioCnt = 0; heightRatioCnt < printRatio; ++heightRatioCnt) {
@@ -1117,6 +1119,27 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 			int xDirection = (distanceX < 0) * -1 + (distanceX > 0);
 			int yDirection = (distanceY < 0) * -1 + (distanceY > 0);
 
+			lineTo(startX, startY, endX, endY, false);
+
+			for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
+
+				stCoord* lineCoord = (*lineIter)->_coord;
+				int y = lineCoord->_y;
+				int x = lineCoord->_x;
+				for (int heightCnt = y; heightCnt < y + printRatio / 2; ++heightCnt) {
+					for (int widthCnt = x; widthCnt < x + printRatio / 2; ++widthCnt) {
+						stReverseRGB* rgb = &rgbData[heightCnt * (_width * printRatio) + widthCnt];
+
+						rgb->red = 200;
+						rgb->green = 0;
+						rgb->blue = 0;
+
+					}
+				}
+
+			}
+
+			/*
 			while (startX != endX || startY != endY) {
 				for (int heightCnt = startY; heightCnt < startY + printRatio / 2; ++heightCnt) {
 					for (int widthCnt = startX; widthCnt < startX + printRatio / 2; ++widthCnt) {
@@ -1135,8 +1158,8 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 				if (startY != endY) {
 					startY += yDirection;
 				}
-
 			}
+			*/
 
 
 		}
