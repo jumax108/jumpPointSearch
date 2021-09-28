@@ -134,6 +134,7 @@ public:
 	iterator lineTo(int sx, int sy, int ex, int ey, bool draw=false);
 
 	void nodeSkip();
+	void printToBitmap(const WCHAR* fileName, const int printRatio, iterator endNodeIter);
 
 #ifdef _WINDOWS_
 
@@ -178,5 +179,4 @@ private:
 
 	bool isNodeInList(stCoord* coord, linkedList<stNode*>* list);
 
-	void printToBitmap(const WCHAR* fileName, const int printRatio, iterator endNodeIter);
 };
