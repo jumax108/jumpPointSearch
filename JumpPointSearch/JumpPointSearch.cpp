@@ -48,8 +48,10 @@ void CJumpPointSearch::pathFindInit() {
 	int lineColorByte = sizeof(stRGB) * _width * _height;
 	ZeroMemory(_lineColor, lineColorByte);
 	listClear();
-	_openList->push_back(new stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), new stCoord(_start._y, _start._x)));
-
+	int nodeMapByte = sizeof(stNode*) * _width * _height;
+	ZeroMemory(_nodeMap, nodeMapByte);
+	_nodeMap[_start._y * _width + _start._x] = new stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), new stCoord(_start._y, _start._x));
+	_openList->push_back(_nodeMap[_start._y * _width + _start._x]);
 }
 
 bool CJumpPointSearch::isNodeInList(stCoord* coord, linkedList<stNode*>* list) {
@@ -740,18 +742,24 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 		HBRUSH hBrush = CreateSolidBrush(RGB(220, 220, 0));
 		HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hBrush);
 
-		for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
 
-			stCoord* coord = (*iter)->_coord;
-			int y = coord->_y;
-			int x = coord->_x;
+		for (int heightCnt = 0; heightCnt < _height; ++heightCnt) {
+			for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
+				stNode* node = getNode(heightCnt, widthCnt);
+				if (node == nullptr || node->_parent == nullptr) {
+					continue;
+				}
+				stCoord* coord = node->_coord;
+				int y = coord->_y;
+				int x = coord->_x;
 
-			int left = x * blockSize + 1;
-			int right = left + blockSize - 1;
-			int top = y * blockSize + 1;
-			int bottom = top + blockSize - 1;
+				int left = x * blockSize + 1;
+				int right = left + blockSize - 1;
+				int top = y * blockSize + 1;
+				int bottom = top + blockSize - 1;
 
-			bool result = Ellipse(hdc, left, top, right, bottom);
+				bool result = Ellipse(hdc, left, top, right, bottom);
+			}
 		}
 
 		SelectObject(hdc, hOldBrush);
@@ -928,20 +936,24 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 
 void CJumpPointSearch::listClear() {
 
-	for (linkedList<stNode*>::iterator iter = _openList->begin(); iter != _openList->end(); ++iter) {
-		delete(*iter);
-	}
-	for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
-		delete(*iter);
-	}
 
 	_openList->clear();
 	_closeList->clear();
+
+	for (int heightCnt = 0; heightCnt < _height; ++heightCnt) {
+		for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
+			stNode* node = getNode(heightCnt, widthCnt);
+			delete(node);
+		}
+	}
 
 }
 
 CJumpPointSearch::iterator CJumpPointSearch::pathFind() {
 
+#ifdef SPEED_TEST
+	sp->profileBegin("JumpPointSearch");
+#endif
 	pathFindInit();
 	void* singleLoopResult = nullptr;
 	do {
@@ -952,7 +964,10 @@ CJumpPointSearch::iterator CJumpPointSearch::pathFind() {
 	if (singleLoopResult == nullptr) {
 		return pathEnd();
 	}
-	
+
+#ifdef SPEED_TEST
+	sp->profileEnd("JumpPointSearch");
+#endif
 	// 못찾으면 nullptr, 찾으면 도착 지점 노드
 	return makePath((stNode*)singleLoopResult);
 
@@ -1023,6 +1038,8 @@ void CJumpPointSearch::test(const WCHAR* fileName) {
 
 	jps->printToBitmap(fileName, 20, findResultIter);
 
+	delete(jps);
+
 }
 
 void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio, iterator endNodeIter) {
@@ -1058,7 +1075,6 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 		for (int heightRatioCnt = 0; heightRatioCnt < printRatio; ++heightRatioCnt) {
 			for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
 				for (int widthRatioCnt = 0; widthRatioCnt < printRatio; ++widthRatioCnt) {
-
 
 					switch (*map(heightCnt, widthCnt)) {
 					case MAP_STATE::ROAD:
@@ -1103,6 +1119,41 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 
 	// 클로즈 리스트 노드 출력
 
+	for (int heightCnt = 0; heightCnt < _height; ++heightCnt) {
+		for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
+			stNode* node = getNode(heightCnt, widthCnt);
+			if (node == nullptr || node->_parent == nullptr) {
+				continue;
+			}
+			int nodeX = node->_coord->_x * printRatio;
+			int nodeY = (_height - 1 - node->_coord->_y) * printRatio;
+			
+			for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
+				nodeX = node->_coord->_x * printRatio + printRatio / 2 - heightRatioCnt;
+				for (int widthRatioCnt = 0; widthRatioCnt < heightRatioCnt * 2 - 1; ++widthRatioCnt) {
+
+					stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
+					rgb->red = 220;
+					rgb->green = 220;
+					rgb->blue = 0;
+				}
+			}
+			
+			nodeY += printRatio / 2;
+
+			for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
+				nodeX = node->_coord->_x * printRatio + heightRatioCnt;
+				for (int widthRatioCnt = 0; widthRatioCnt < (printRatio / 2 - 1 - heightRatioCnt) * 2 - 1; ++widthRatioCnt) {
+					stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
+					rgb->red = 220;
+					rgb->green = 220;
+					rgb->blue = 0;
+				}
+			}
+		}
+	}
+
+	/*
 	for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
 		int nodeX = (*iter)->_coord->_x * printRatio;
 		int nodeY = (_height-1 - (*iter)->_coord->_y) * printRatio;
@@ -1129,7 +1180,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 			}
 		}
 
-	}
+	}*/
 
 	// 오픈 리스트 노드 출력
 
@@ -1242,6 +1293,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 }
 
 CJumpPointSearch::iterator CJumpPointSearch::makePath(stNode* endNode) {
+	
 
 	_path->clear();
 	while (endNode->_parent != nullptr) {
@@ -1491,15 +1543,15 @@ void CJumpPointSearch::nodeSkip() {
 			stNode* startNode = *startNodeIter;
 			stNode* endNode = *endNodeIter;
 
-			stCoord* startCoord = startNode->_coord;
-			stCoord* endCoord = endNode->_coord;
+			const stCoord* startCoord = startNode->_coord;
+			const stCoord* endCoord = endNode->_coord;
 
 			lineTo(startCoord->_x, startCoord->_y, endCoord->_x, endCoord->_y);
 			 
 			bool isLineBlock = false;
 			for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
 
-				stCoord* lineCoord = (*lineIter)->_coord;
+				const stCoord* lineCoord = (*lineIter)->_coord;
 				if (*map(lineCoord->_y, lineCoord->_x) == MAP_STATE::WALL) {
 					isLineBlock = true;
 					break;
@@ -1515,7 +1567,7 @@ void CJumpPointSearch::nodeSkip() {
 
 				changeLineNodeCoord.clear();
 				for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
-					stCoord* coord = (*lineIter)->_coord;
+					const stCoord* coord = (*lineIter)->_coord;
 					changeLineNodeCoord.push_back(new stCoord(coord->_y, coord->_x));
 				}
 
@@ -1539,8 +1591,6 @@ void CJumpPointSearch::nodeSkip() {
 				rgb->blue = 125;
 				rgb->green = 125;
 
-				delete(*lineCoordIter);
-
 			}
 
 			changeLineNodeCoord.clear();
@@ -1549,7 +1599,7 @@ void CJumpPointSearch::nodeSkip() {
 			while (deleteNodeIter != findNodeIter) {
 				stNode* deleteNode = *deleteNodeIter;
 
-				stCoord* deleteCoord = deleteNode->_coord;
+				stCoord* deleteCoord = (deleteNode)->_coord;
 				for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
 					stCoord* nodeCoord = (*iter)->_coord;
 
@@ -1561,7 +1611,6 @@ void CJumpPointSearch::nodeSkip() {
 					}
 				}
 
-				delete(deleteNode);
 				_path->erase(deleteNodeIter._pathIter);
 				skipNodeCnt -= 1;
 				deleteNodeIter = startNodeIter + 1;

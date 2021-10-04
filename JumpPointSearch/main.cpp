@@ -289,18 +289,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 sp = new SimpleProfiler();
                 #endif
                 for (int testCnt = 0; testCnt < 100; ++testCnt) {
+                    
                     WCHAR fileName[50];
                     swprintf_s(fileName, 50, L".\\testImage\\%04d.bmp", testCnt);
 
-                    #ifdef SPEED_TEST
-                    sp->profileBegin("JumpPointSearch");
-                    #endif
-
+                    if (testCnt == 1) {
+                        int k = 1;
+                    }
                     CJumpPointSearch::test(fileName);
 
-                    #ifdef SPEED_TEST
-                    sp->profileEnd("JumpPointSearch");
-                    #endif
                 }
 
                 #ifdef SPEED_TEST

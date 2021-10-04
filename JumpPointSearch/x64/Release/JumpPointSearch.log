@@ -7,11 +7,22 @@ C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(950,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(950,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(962,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(962,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+  main.cpp
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(167,12): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(167,12): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
   코드를 생성하고 있습니다.
-  0 of 89 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  7 of 90 functions ( 7.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    3 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   JumpPointSearch.vcxproj -> C:\Users\jhmax\Desktop\Github\JumpPointSearch\x64\Release\JumpPointSearch.exe

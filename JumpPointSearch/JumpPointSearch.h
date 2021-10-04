@@ -106,7 +106,7 @@ public:
 	inline MAP_STATE* map(int y, int x) {
 		return &_map[y * _width + x];
 	}
-	inline stNode* node(int y, int x) {
+	inline stNode* getNode(int y, int x) {
 		return _nodeMap[y * _width + x];
 	}
 
