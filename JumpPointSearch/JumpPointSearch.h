@@ -106,6 +106,9 @@ public:
 	inline MAP_STATE* map(int y, int x) {
 		return &_map[y * _width + x];
 	}
+	inline stNode* node(int y, int x) {
+		return _nodeMap[y * _width + x];
+	}
 
 	inline stRGB* mapColor(int y, int x) {
 		return &_mapColor[y * _width + x];
@@ -167,6 +170,7 @@ public:
 private:
 
 	MAP_STATE* _map;
+	stNode** _nodeMap;
 	int _width;
 	int _height;
 
