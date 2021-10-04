@@ -2,6 +2,7 @@
 #include "framework.h"
 #include "SimpleProfiler.h"
 #include "myLinkedList.h"
+#include "RedBlackTree.h"
 #include "JumpPointSearch.h"
 
 #define abs(x) ((x) < 0 ? -(x) : (x))
@@ -22,6 +23,10 @@ CJumpPointSearch::CJumpPointSearch(int width, int height) {
 	int lineColorByte = sizeof(stRGB) * _width * _height;
 	_lineColor = (stRGB*)malloc(lineColorByte);
 	ZeroMemory(_lineColor, lineColorByte);
+
+	int nodeMapByte = sizeof(stNode*) * _width * _height;
+	_nodeMap = (stNode**)malloc(nodeMapByte);
+	ZeroMemory(_nodeMap, nodeMapByte);
 
 	_openList = new linkedList<stNode*>();
 	_closeList = new linkedList<stNode*>();
@@ -62,13 +67,19 @@ bool CJumpPointSearch::isNodeInList(stCoord* coord, linkedList<stNode*>* list) {
 
 void CJumpPointSearch::makeNode(stCoord* corner, stNode* parent) {
 
-	if (isNodeInList(corner, _openList) == true || isNodeInList(corner, _closeList) == true) {
+	stNode** newNode = &_nodeMap[corner->_y * _width + corner->_x];
+
+	if (*newNode != nullptr) {
 		return;
 	}
 
 	int moveCnt = parent->_moveCnt + 1;
 	int distance = abs(_end._y -  corner->_y) + abs(_end._x - corner->_x);
-	_openList->push_back(new stNode(parent, moveCnt, distance, corner));
+
+    *newNode = new stNode(parent, moveCnt, distance, corner);
+
+	_openList->push_back(*newNode);
+
 }
 
 CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
@@ -80,7 +91,7 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 	linkedList<stNode*>::iterator minIter = *findMin(_openList);
 	stNode* selectNode = *minIter;
 	_openList->erase(minIter);
-	_closeList->push_back(selectNode);
+	//_closeList->push_back(selectNode);
 
 	stCoord* coord = selectNode->_coord;
 
