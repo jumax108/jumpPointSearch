@@ -1239,7 +1239,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 			int xDirection = (distanceX < 0) * -1 + (distanceX > 0);
 			int yDirection = (distanceY < 0) * -1 + (distanceY > 0);
 
-			lineTo(startX, startY, endX, endY, false);
+			lineTo(startX, startY, endX, endY);
 
 			for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
 
@@ -1258,29 +1258,6 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 				}
 
 			}
-
-			/*
-			while (startX != endX || startY != endY) {
-				for (int heightCnt = startY; heightCnt < startY + printRatio / 2; ++heightCnt) {
-					for (int widthCnt = startX; widthCnt < startX + printRatio / 2; ++widthCnt) {
-						stReverseRGB* rgb = &rgbData[heightCnt * (_width*printRatio) + widthCnt];
-
-						rgb->red = 200;
-						rgb->green = 0;
-						rgb->blue = 0;
-
-					}
-				}
-
-				if (startX != endX) {
-					startX += xDirection;
-				}
-				if (startY != endY) {
-					startY += yDirection;
-				}
-			}
-			*/
-
 
 		}
 	} while (false);
@@ -1306,7 +1283,7 @@ CJumpPointSearch::iterator CJumpPointSearch::makePath(stNode* endNode) {
 	return pathBegin();
 }
 
-CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw) {
+bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wallCheck) {
 
 	#ifdef SPEED_TEST
 	sp->profileBegin("lineTo");
@@ -1405,7 +1382,15 @@ CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int 
 		int createDirection = 1;
 		coord._x = mid._x;
 		coord._y = mid._y;
+
 		while (midNodeCnt > 0) {
+
+			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
+				#ifdef SPEED_TEST
+				sp->profileEnd("lineTo");
+				#endif
+				return false;
+			}
 
 			if (createDirection == -1) {
 				_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
@@ -1448,8 +1433,15 @@ CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int 
 		}
 
 		while (coord._y != sy || coord._x != sx) {
-
 			*mainAxis -= mainAxisMove;
+
+			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
+			#ifdef SPEED_TEST
+				sp->profileEnd("lineTo");
+			#endif
+				return false;
+			}
+
 			_line->push_front(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 			if (draw == true) {
 				stRGB* rgb = lineColor(coord._y, coord._x);
@@ -1496,6 +1488,14 @@ CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int 
 		while (coord._y != ey || coord._x != ex) {
 
 			*mainAxis += mainAxisMove;
+
+			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
+			#ifdef SPEED_TEST
+				sp->profileEnd("lineTo");
+			#endif
+				return false;
+			}
+
 			_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 			if (draw == true) {
 				stRGB* rgb = lineColor(coord._y, coord._x);
@@ -1521,9 +1521,9 @@ CJumpPointSearch::iterator CJumpPointSearch::lineTo(int sx, int sy, int ex, int 
 	#ifdef SPEED_TEST
 	sp->profileEnd("lineTo");
 	#endif
-	return lineBegin();
+	return true;
 }
-
+	
 void CJumpPointSearch::nodeSkip() {
 
 	#ifdef SPEED_TEST
@@ -1531,94 +1531,47 @@ void CJumpPointSearch::nodeSkip() {
 	#endif
 	for (iterator startNodeIter = pathBegin(); startNodeIter != pathEnd(); ++startNodeIter) {
 
-		linkedList<stCoord*> changeLineNodeCoord;
-
-		int skipNodeCnt = 0;
-		
 		bool findNode = false;
 		iterator findNodeIter;
 
 		for (iterator endNodeIter = startNodeIter + 1; endNodeIter != pathEnd(); ++endNodeIter) {
-		
+
 			stNode* startNode = *startNodeIter;
 			stNode* endNode = *endNodeIter;
 
 			const stCoord* startCoord = startNode->_coord;
 			const stCoord* endCoord = endNode->_coord;
 
-			lineTo(startCoord->_x, startCoord->_y, endCoord->_x, endCoord->_y);
-			 
-			bool isLineBlock = false;
-			for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
+			bool ableLine = lineTo(startCoord->_x, startCoord->_y, endCoord->_x, endCoord->_y, false, true);
 
-				const stCoord* lineCoord = (*lineIter)->_coord;
-				if (*map(lineCoord->_y, lineCoord->_x) == MAP_STATE::WALL) {
-					isLineBlock = true;
-					break;
-				}
-
-			}
-
-			if (isLineBlock == false) {
+			if (ableLine == true) {
 				endNode->_parent = startNode;
 				findNodeIter = endNodeIter;
 				findNode = true;
-				skipNodeCnt += 1;
-
-				changeLineNodeCoord.clear();
-				for (iterator lineIter = lineBegin(); lineIter != lineEnd(); ++lineIter) {
-					const stCoord* coord = (*lineIter)->_coord;
-					changeLineNodeCoord.push_back(new stCoord(coord->_y, coord->_x));
-				}
-
 			}
-			else {
-				//break;
-			}
-
 
 		}
-		skipNodeCnt -= 1;
 
-		if (findNode == true) {
-
-			for (linkedList<stCoord*>::iterator lineCoordIter = changeLineNodeCoord.begin(); lineCoordIter != changeLineNodeCoord.end(); ++lineCoordIter) {
-
-				stCoord* coord = *lineCoordIter;
-				stRGB* rgb = lineColor(coord->_y, coord->_x);
-
-				rgb->red = 20;
-				rgb->blue = 125;
-				rgb->green = 125;
-
-			}
-
-			changeLineNodeCoord.clear();
-
-			iterator deleteNodeIter = startNodeIter + 1;
-			while (deleteNodeIter != findNodeIter) {
-				stNode* deleteNode = *deleteNodeIter;
-
-				stCoord* deleteCoord = (deleteNode)->_coord;
-				for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
-					stCoord* nodeCoord = (*iter)->_coord;
-
-					if (nodeCoord->_y == deleteCoord->_y && nodeCoord->_x == deleteCoord->_x) {
-
-						_closeList->erase(iter);
-						break;
-
-					}
-				}
-
-				_path->erase(deleteNodeIter._pathIter);
-				skipNodeCnt -= 1;
-				deleteNodeIter = startNodeIter + 1;
-			}
+		if (findNode == false) {
+			continue;
 		}
 
-		
+		for (linkedList<stNode*>::iterator lineCoordIter = _line->begin(); lineCoordIter != _line->end(); ++lineCoordIter) {
 
+			stCoord* coord = (*lineCoordIter)->_coord;
+			stRGB* rgb = lineColor(coord->_y, coord->_x);
+
+			rgb->red = 20;
+			rgb->blue = 125;
+			rgb->green = 125;
+
+		}
+
+		iterator deleteNodeIter = startNodeIter + 1;
+		while (deleteNodeIter != findNodeIter) {
+			_path->erase(deleteNodeIter._pathIter);
+			deleteNodeIter = startNodeIter + 1;
+		}
 	}
 	#ifdef SPEED_TEST
 	sp->profileEnd("nodeSkip");

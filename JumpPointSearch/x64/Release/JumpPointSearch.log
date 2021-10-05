@@ -21,8 +21,8 @@ C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(167,12): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(167,12): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
   코드를 생성하고 있습니다.
-  7 of 90 functions ( 7.8%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    3 functions had inline decision re-evaluated but remain unchanged
+  5 of 90 functions ( 5.6%) were compiled, the rest were copied from previous compilation.
+    2 functions were new in current compilation
+    2 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   JumpPointSearch.vcxproj -> C:\Users\jhmax\Desktop\Github\JumpPointSearch\x64\Release\JumpPointSearch.exe

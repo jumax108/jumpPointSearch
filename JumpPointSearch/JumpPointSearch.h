@@ -140,7 +140,7 @@ public:
 
 	static void test(const WCHAR* fileName);
 
-	iterator lineTo(int sx, int sy, int ex, int ey, bool draw=false);
+	bool lineTo(int sx, int sy, int ex, int ey, bool draw=false, bool wallCheck=false);
 
 	void nodeSkip();
 	void printToBitmap(const WCHAR* fileName, const int printRatio, iterator endNodeIter);
