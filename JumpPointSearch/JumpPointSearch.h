@@ -5,6 +5,8 @@
 extern SimpleProfiler* sp;
 #endif
 
+extern RECT windowRect;
+
 class CJumpPointSearch {
 
 

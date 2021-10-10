@@ -930,6 +930,29 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 
 	}
 
+	{
+
+		int left = windowRect.right - 230;
+		int right = windowRect.right - 5;
+		int top = 0;
+		int bottom = 185;
+
+		Rectangle(hdc, left, top, right, bottom);
+
+		int strHeight = top + 10;
+		TextOutW(hdc, left + 10, strHeight, L"좌클릭: 벽 생성 / 제거 ", 15); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"우클릭: 길 찾기 시작", 12); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"마우스휠: 블럭 크기 조절", 14); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"s: 출발 지점 설정", 11); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"e: 도착 지점 설정", 11); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"c: 길찾기 정보 초기화", 13); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"z: 완전 초기화", 9); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"t: 테스트 코드 실행", 12); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"b: 비트맵으로 출력", 11); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"p: 시작, 끝 지점을 이어보기", 17); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"화살표: 맵 크기 변경", 12); strHeight += 15;
+
+	}
 
 }
 #endif
@@ -1531,15 +1554,16 @@ void CJumpPointSearch::nodeSkip() {
 	#endif
 	for (iterator startNodeIter = pathBegin(); startNodeIter != pathEnd(); ++startNodeIter) {
 
-		bool findNode = false;
+		bool nodeFound = false;
 		iterator findNodeIter;
+
+		stNode* startNode = *startNodeIter;
+		const stCoord* startCoord = startNode->_coord;
 
 		for (iterator endNodeIter = startNodeIter + 1; endNodeIter != pathEnd(); ++endNodeIter) {
 
-			stNode* startNode = *startNodeIter;
 			stNode* endNode = *endNodeIter;
 
-			const stCoord* startCoord = startNode->_coord;
 			const stCoord* endCoord = endNode->_coord;
 
 			bool ableLine = lineTo(startCoord->_x, startCoord->_y, endCoord->_x, endCoord->_y, false, true);
@@ -1547,14 +1571,19 @@ void CJumpPointSearch::nodeSkip() {
 			if (ableLine == true) {
 				endNode->_parent = startNode;
 				findNodeIter = endNodeIter;
-				findNode = true;
+				nodeFound = true;
 			}
 
 		}
 
-		if (findNode == false) {
+		if (nodeFound == false) {
 			continue;
 		}
+
+		stNode* findNode = *findNodeIter;
+		stCoord* findCoord = findNode->_coord;
+
+		lineTo(startCoord->_x, startCoord->_y, findCoord->_x, findCoord->_y);
 
 		for (linkedList<stNode*>::iterator lineCoordIter = _line->begin(); lineCoordIter != _line->end(); ++lineCoordIter) {
 
