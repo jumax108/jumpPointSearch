@@ -5,6 +5,8 @@
 extern SimpleProfiler* sp;
 #endif
 
+extern RECT windowRect;
+
 class CJumpPointSearch {
 
 
@@ -106,7 +108,7 @@ public:
 	inline MAP_STATE* map(int y, int x) {
 		return &_map[y * _width + x];
 	}
-	inline stNode* node(int y, int x) {
+	inline stNode* getNode(int y, int x) {
 		return _nodeMap[y * _width + x];
 	}
 
@@ -140,7 +142,7 @@ public:
 
 	static void test(const WCHAR* fileName);
 
-	iterator lineTo(int sx, int sy, int ex, int ey, bool draw=false);
+	bool lineTo(int sx, int sy, int ex, int ey, bool draw=false, bool wallCheck=false);
 
 	void nodeSkip();
 	void printToBitmap(const WCHAR* fileName, const int printRatio, iterator endNodeIter);

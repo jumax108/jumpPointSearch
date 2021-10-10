@@ -21,6 +21,8 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
+RECT windowRect;
+
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -160,6 +162,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         jps = new CJumpPointSearch(mapWidth, mapHeight);
         new (&jps->_end) CJumpPointSearch::stCoord(-1, -1);
         new (&jps->_start) CJumpPointSearch::stCoord(-1, -1);
+
+        GetWindowRect(hWnd, &windowRect);
+
+        windowRect.right -= windowRect.left;
+        windowRect.bottom -= windowRect.top;
+        windowRect.left = 0;
+        windowRect.top = 0;
+
         break;
     case WM_TIMER:
     {
@@ -289,18 +299,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 sp = new SimpleProfiler();
                 #endif
                 for (int testCnt = 0; testCnt < 100; ++testCnt) {
+                    
                     WCHAR fileName[50];
                     swprintf_s(fileName, 50, L".\\testImage\\%04d.bmp", testCnt);
 
-                    #ifdef SPEED_TEST
-                    sp->profileBegin("JumpPointSearch");
-                    #endif
-
+                    if (testCnt == 1) {
+                        int k = 1;
+                    }
                     CJumpPointSearch::test(fileName);
 
-                    #ifdef SPEED_TEST
-                    sp->profileEnd("JumpPointSearch");
-                    #endif
                 }
 
                 #ifdef SPEED_TEST
@@ -350,6 +357,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     }
+    case WM_KEYDOWN:
+    {
+        switch (wParam) {
+        case VK_LEFT:
+            mapWidth -= 1;
+            delete(jps);
+            jps = new CJumpPointSearch(mapWidth, mapHeight);
+            break;
+        case VK_RIGHT:
+            mapWidth += 1;
+            delete(jps);
+            jps = new CJumpPointSearch(mapWidth, mapHeight);
+            break;
+        case VK_UP:
+            mapHeight -= 1;
+            delete(jps);
+            jps = new CJumpPointSearch(mapWidth, mapHeight);
+            break;
+        case VK_DOWN:
+            mapHeight += 1;
+            delete(jps);
+            jps = new CJumpPointSearch(mapWidth, mapHeight);
+            break;
+        }
+        InvalidateRect(hWnd, nullptr, true);
+    }
+        break;
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
@@ -364,6 +398,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         EndPaint(hWnd, &ps);
     }
     break;
+    case WM_SIZE:
+        GetWindowRect(hWnd, &windowRect);
+
+        windowRect.right -= windowRect.left;
+        windowRect.bottom -= windowRect.top;
+        windowRect.left = 0;
+        windowRect.top = 0;
+        break;
     case WM_MOUSEWHEEL: {
         short wheelMove = HIWORD(wParam);
         if (wheelMove > 0) {
