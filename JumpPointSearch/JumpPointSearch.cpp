@@ -87,7 +87,7 @@ void CJumpPointSearch::makeNode(stCoord* corner, stNode* parent) {
 CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 
 	#ifdef SPEED_TEST
-	sp->profileBegin("singleLoop");
+		sp->profileBegin("singleLoop");
 	#endif
 
 	linkedList<stNode*>::iterator minIter = *findMin(_openList);
@@ -100,7 +100,7 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 	if (coord->_y == _end._y && coord->_x == _end._x) {
 
 		#ifdef SPEED_TEST
-		sp->profileEnd("singleLoop");
+			sp->profileEnd("singleLoop");
 		#endif
 		return selectNode;
 	}
@@ -415,13 +415,13 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 	if (_openList->empty() == false) {
 		// 아직 확인할 노드가 남음
 		#ifdef SPEED_TEST
-		sp->profileEnd("singleLoop");
+			sp->profileEnd("singleLoop");
 		#endif
 		return (stNode*)1;
 	}
 
 	#ifdef SPEED_TEST
-	sp->profileEnd("singleLoop");
+		sp->profileEnd("singleLoop");
 	#endif
 	return nullptr;
 }
@@ -429,7 +429,7 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int y, int x, const stRGB* color) {
 
 	#ifdef SPEED_TEST
-	sp->profileBegin("checkOrthogonal");
+		sp->profileBegin("checkOrthogonal");
 	#endif
 	int tyArr[4] = { 0,0,-1,1 };
 	int txArr[4] = { -1,1,0,0 };
@@ -446,7 +446,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 		if (y < 0 || x < 0 || y >= _height || x >= _width) {
 			// 맵 끝까지 감
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkOrthogonal");
+				sp->profileEnd("checkOrthogonal");
 			#endif
 			return nullptr;
 		}
@@ -454,7 +454,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 		if (*map(y, x) == MAP_STATE::WALL) {
 			// 길 막힘
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkOrthogonal");
+				sp->profileEnd("checkOrthogonal");
 			#endif
 			return nullptr;
 		}
@@ -467,7 +467,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 		if (y == _end._y && x == _end._x) {
 			// 목표지점 발견
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkOrthogonal");
+				sp->profileEnd("checkOrthogonal");
 			#endif
 			return new stCoord(y, x, dir);
 		}
@@ -492,7 +492,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 			if (*map(y + tx, x + ty) == MAP_STATE::WALL && *map(y + tx + ty, x + ty + tx) == MAP_STATE::ROAD) {
 				// 코너 발견
 				#ifdef SPEED_TEST
-				sp->profileEnd("checkOrthogonal");
+					sp->profileEnd("checkOrthogonal");
 				#endif
 				return new stCoord(y, x, dir);
 			}
@@ -507,7 +507,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 			if (*map(y - tx, x - ty) == MAP_STATE::WALL && *map(y - tx + ty, x - ty + tx) == MAP_STATE::ROAD) {
 				// 코너 발견
 				#ifdef SPEED_TEST
-				sp->profileEnd("checkOrthogonal");
+					sp->profileEnd("checkOrthogonal");
 				#endif
 				return new stCoord(y, x, dir);
 			}
@@ -516,7 +516,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 	}
 
 	#ifdef SPEED_TEST
-	sp->profileEnd("checkOrthogonal");
+		sp->profileEnd("checkOrthogonal");
 	#endif
 	return nullptr;
 }
@@ -557,7 +557,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 		if (y < 0 || x < 0 || y >= _height || x >= _width) {
 			// 맵 끝까지 감
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkDiagonal");
+				sp->profileEnd("checkDiagonal");
 			#endif
 			return nullptr;
 		}
@@ -565,7 +565,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 		if (*map(y, x) == MAP_STATE::WALL) {
 			// 길 막힘
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkDiagonal");
+				sp->profileEnd("checkDiagonal");
 			#endif
 			return nullptr;
 		}
@@ -577,7 +577,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 		if (y == _end._y && x == _end._x) {
 			// 목표지점 발견
 			#ifdef SPEED_TEST
-			sp->profileEnd("checkDiagonal");
+				sp->profileEnd("checkDiagonal");
 			#endif
 			return new stCoord(y, x, dir);
 		}
@@ -589,7 +589,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 				stCoord* result = new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 				delete(lineCheckResult);
 				#ifdef SPEED_TEST
-				sp->profileEnd("checkDiagonal");
+					sp->profileEnd("checkDiagonal");
 				#endif		
 				return result;
 			}
@@ -614,7 +614,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			if ((*map(y - ty, x) == MAP_STATE::WALL && *map(y - ty, x + tx) == MAP_STATE::ROAD)) {
 				// 대각선 이동 중 코너 발견함
 				#ifdef SPEED_TEST
-				sp->profileEnd("checkDiagonal");
+					sp->profileEnd("checkDiagonal");
 				#endif		
 				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 			}
@@ -625,7 +625,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			if (*map(y, x - tx) == MAP_STATE::WALL && *map(y + ty, x - tx) == MAP_STATE::ROAD) {
 				// 대각선 이동 중 코너 발견함
 				#ifdef SPEED_TEST
-				sp->profileEnd("checkDiagonal");
+					sp->profileEnd("checkDiagonal");
 				#endif		
 				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
 			}
@@ -635,7 +635,7 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 	}
 
 	#ifdef SPEED_TEST
-	sp->profileEnd("checkDiagonal");
+		sp->profileEnd("checkDiagonal");
 	#endif
 	return nullptr;
 }
@@ -935,7 +935,7 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 		int left = windowRect.right - 230;
 		int right = windowRect.right - 5;
 		int top = 0;
-		int bottom = 185;
+		int bottom = 195;
 
 		Rectangle(hdc, left, top, right, bottom);
 
@@ -951,6 +951,7 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 		TextOutW(hdc, left + 10, strHeight, L"b: 비트맵으로 출력", 11); strHeight += 15;
 		TextOutW(hdc, left + 10, strHeight, L"p: 시작, 끝 지점을 이어보기", 17); strHeight += 15;
 		TextOutW(hdc, left + 10, strHeight, L"화살표: 맵 크기 변경", 12); strHeight += 15;
+		TextOutW(hdc, left + 10, strHeight, L"l: 노드 스킵", 8); strHeight += 15;
 
 	}
 
@@ -974,9 +975,9 @@ void CJumpPointSearch::listClear() {
 
 CJumpPointSearch::iterator CJumpPointSearch::pathFind() {
 
-#ifdef SPEED_TEST
-	sp->profileBegin("JumpPointSearch");
-#endif
+	#ifdef SPEED_TEST
+		sp->profileBegin("JumpPointSearch");
+	#endif
 	pathFindInit();
 	void* singleLoopResult = nullptr;
 	do {
@@ -988,9 +989,9 @@ CJumpPointSearch::iterator CJumpPointSearch::pathFind() {
 		return pathEnd();
 	}
 
-#ifdef SPEED_TEST
-	sp->profileEnd("JumpPointSearch");
-#endif
+	#ifdef SPEED_TEST
+		sp->profileEnd("JumpPointSearch");
+	#endif
 	// 못찾으면 nullptr, 찾으면 도착 지점 노드
 	return makePath((stNode*)singleLoopResult);
 
@@ -1176,35 +1177,6 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 		}
 	}
 
-	/*
-	for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
-		int nodeX = (*iter)->_coord->_x * printRatio;
-		int nodeY = (_height-1 - (*iter)->_coord->_y) * printRatio;
-
-		for (int heightRatioCnt = 1; heightRatioCnt <= printRatio/2; ++heightRatioCnt) {
-			nodeX = (*iter)->_coord->_x * printRatio + printRatio / 2 - heightRatioCnt;
-			for (int widthRatioCnt = 0; widthRatioCnt < heightRatioCnt * 2 - 1; ++widthRatioCnt) {
-				stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
-				rgb->red = 220;
-				rgb->green = 220;
-				rgb->blue = 0;
-			}
-		}
-
-		nodeY += printRatio / 2;
-		
-		for (int heightRatioCnt = 1; heightRatioCnt <= printRatio/2; ++heightRatioCnt) {
-			nodeX = (*iter)->_coord->_x * printRatio + heightRatioCnt;
-			for (int widthRatioCnt = 0; widthRatioCnt < (printRatio/2-1-heightRatioCnt) * 2 - 1; ++widthRatioCnt) {
-				stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
-				rgb->red = 220;
-				rgb->green = 220;
-				rgb->blue = 0;
-			}
-		}
-
-	}*/
-
 	// 오픈 리스트 노드 출력
 
 	for (linkedList<stNode*>::iterator iter = _openList->begin(); iter != _openList->end(); ++iter) {
@@ -1285,7 +1257,7 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 		}
 	} while (false);
 
-	fwrite(rgbData, sizeof(stReverseRGB), _width * printRatio * _height * printRatio, bitmapFile);
+	fwrite(rgbData, sizeof(stReverseRGB), (size_t)(_width * printRatio * _height * printRatio), bitmapFile);
 	fclose(bitmapFile); 
 
 	free(rgbData);
@@ -1309,7 +1281,7 @@ CJumpPointSearch::iterator CJumpPointSearch::makePath(stNode* endNode) {
 bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wallCheck) {
 
 	#ifdef SPEED_TEST
-	sp->profileBegin("lineTo");
+		sp->profileBegin("lineTo");
 	#endif
 	_line->clear();
 
@@ -1340,14 +1312,6 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 	stCoord direction(ey - sy, ex - sx);
 
 	stCoord move( (direction._y < 0) * -1 + (direction._y > 0), (direction._x < 0) * -1 + (direction._x > 0));
-
-	/*
-	_line->push_back(new stNode(nullptr, 0, 0, new stCoord(sy, sx)));
-	if (draw == true) {
-		lineColor(sy, sx)->red = 160;
-		lineColor(sy, sx)->green = 140;
-		lineColor(sy, sx)->blue = 200;
-	}*/
 
 	int *mainAxis;
 	int mainDistance;
@@ -1410,7 +1374,7 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 
 			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
 				#ifdef SPEED_TEST
-				sp->profileEnd("lineTo");
+					sp->profileEnd("lineTo");
 				#endif
 				return false;
 			}
@@ -1444,7 +1408,6 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 	{
 		int weight = midWeight;
 		new (&coord) stCoord(left._y, left._x);
-		//*subAxis -= subAxisMove * (subDistance % 2);
 		*mainAxis += mainAxisMove * (subDistance % 2 == 0);
 
 		if (subDistance % 2 == 1) {
@@ -1459,9 +1422,9 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 			*mainAxis -= mainAxisMove;
 
 			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
-			#ifdef SPEED_TEST
-				sp->profileEnd("lineTo");
-			#endif
+				#ifdef SPEED_TEST
+					sp->profileEnd("lineTo");
+				#endif
 				return false;
 			}
 
@@ -1495,7 +1458,6 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 	{
 		int weight = midWeight;
 		new (&coord) stCoord(right._y, right._x);
-		//*subAxis -= subAxisMove * (subDistance % 2);
 
 		*subAxis += subAxisMove;
 		if (subDistance % 2 == 1) {
@@ -1513,9 +1475,9 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 			*mainAxis += mainAxisMove;
 
 			if (wallCheck == true && (*map(coord._y, coord._x)) == MAP_STATE::WALL) {
-			#ifdef SPEED_TEST
-				sp->profileEnd("lineTo");
-			#endif
+				#ifdef SPEED_TEST
+					sp->profileEnd("lineTo");
+				#endif
 				return false;
 			}
 
@@ -1542,7 +1504,7 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 	}
 
 	#ifdef SPEED_TEST
-	sp->profileEnd("lineTo");
+		sp->profileEnd("lineTo");
 	#endif
 	return true;
 }
@@ -1550,7 +1512,7 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 void CJumpPointSearch::nodeSkip() {
 
 	#ifdef SPEED_TEST
-	sp->profileBegin("nodeSkip");
+		sp->profileBegin("nodeSkip");
 	#endif
 	for (iterator startNodeIter = pathBegin(); startNodeIter != pathEnd(); ++startNodeIter) {
 
@@ -1603,6 +1565,6 @@ void CJumpPointSearch::nodeSkip() {
 		}
 	}
 	#ifdef SPEED_TEST
-	sp->profileEnd("nodeSkip");
+		sp->profileEnd("nodeSkip");
 	#endif
 }

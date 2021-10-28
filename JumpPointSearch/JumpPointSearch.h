@@ -1,6 +1,4 @@
 
-#define SPEED_TEST
-
 #ifdef SPEED_TEST
 extern SimpleProfiler* sp;
 #endif
