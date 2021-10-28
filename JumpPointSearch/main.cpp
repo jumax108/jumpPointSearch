@@ -294,25 +294,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case 't':
             {
                 #ifdef SPEED_TEST
-                srand(1008);
-                delete(sp);
-                sp = new SimpleProfiler();
+                    srand(1008);
+                    delete(sp);
+                    sp = new SimpleProfiler();
                 #endif
+
                 for (int testCnt = 0; testCnt < 100; ++testCnt) {
                     
                     WCHAR fileName[50];
                     swprintf_s(fileName, 50, L".\\testImage\\%04d.bmp", testCnt);
-
-                    if (testCnt == 1) {
-                        int k = 1;
-                    }
                     CJumpPointSearch::test(fileName);
 
                 }
 
                 #ifdef SPEED_TEST
-                sp->printToFile();
-                #endif
+                    sp->printToFile();
+                    #endif
                 MessageBoxW(hWnd, L"테스트 끝 !", L"JumpPointSearch", MB_OK);
             }
                 break;
