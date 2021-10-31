@@ -1,6 +1,9 @@
 
+template<typename T>
+class CObjectFreeList;
+
 #ifdef SPEED_TEST
-extern SimpleProfiler* sp;
+	extern SimpleProfiler* sp;
 #endif
 
 extern RECT windowRect;
@@ -55,14 +58,12 @@ public:
 		int _distance;
 		CJumpPointSearch::stCoord* _coord;
 
+		stNode(){}
 		stNode(stNode* parent, int moveCnt, int distance, stCoord* coord) {
 			_coord = coord;
 			_moveCnt = moveCnt;
 			_parent = parent;
 			_distance = distance;
-		}
-		~stNode() {
-			delete(_coord);
 		}
 	};
 
@@ -181,6 +182,9 @@ private:
 	linkedList<stNode*>* _closeList;
 	linkedList<stNode*>* _path;
 	linkedList<stNode*>* _line;
+
+	CObjectFreeList<stNode>* nodeFreeList;
+	CObjectFreeList<stCoord>* coordFreeList;
 
 	linkedList<stNode*>::iterator* findMin(linkedList<stNode*>* list);
 

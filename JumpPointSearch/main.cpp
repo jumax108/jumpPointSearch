@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "myLinkedList.h"
 #include "RedBlackTree.h"
+#include "ObjectFreeList.h"
 #include "JumpPointSearch.h"
 
 #define MAX_LOADSTRING 100
@@ -13,7 +14,7 @@
 CJumpPointSearch* jps;
 
 #ifdef SPEED_TEST
-SimpleProfiler* sp = new SimpleProfiler();
+    SimpleProfiler* sp = new SimpleProfiler();
 #endif
 
 // 전역 변수:
@@ -299,7 +300,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     sp = new SimpleProfiler();
                 #endif
 
-                for (int testCnt = 0; testCnt < 100; ++testCnt) {
+                for (int testCnt = 0; testCnt < 200; ++testCnt) {
                     
                     WCHAR fileName[50];
                     swprintf_s(fileName, 50, L".\\testImage\\%04d.bmp", testCnt);
@@ -309,7 +310,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 #ifdef SPEED_TEST
                     sp->printToFile();
-                    #endif
+                #endif
+
                 MessageBoxW(hWnd, L"테스트 끝 !", L"JumpPointSearch", MB_OK);
             }
                 break;
@@ -331,12 +333,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 CJumpPointSearch::iterator iter = jps->lineBegin();
                 for (; iter != jps->lineEnd(); ++iter) {
 
-                    //LineTo(hdc,  + (blockSize / 2), (*iter)->_coord->_y * blockSize + (blockSize / 2));
                     int left = (*iter)->_coord->_x * blockSize + 1;
                     int top = (*iter)->_coord->_y * blockSize + 1;
                     int right = left + blockSize - 1;
                     int bottom = top + blockSize - 1;
-                    //Rectangle(hdc, left, top, right, bottom);
                 }
 
                 SelectObject(hdc, hOldBrush);

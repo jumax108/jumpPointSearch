@@ -69,9 +69,7 @@ public:
 		FILE* outFile;
 		fopen_s(&outFile, "profiler.txt", "w");
 
-		fprintf_s(outFile, "---------------------------------------------------------------------------------------------\n");
-		fprintf_s(outFile, "%20s | %15s | %15s | %15s | %15s |\n", "Name", "Average", "Min", "Max", "Call");
-		fprintf_s(outFile, "---------------------------------------------------------------------------------------------\n");
+		fprintf_s(outFile, "%20s | %15s | %15s | %15s | %15s \n", "Name", "Average", "Min", "Max", "Call");
 		
 		for (int infoCnt = 0; infoCnt < 50; infoCnt++) {
 			
@@ -88,27 +86,17 @@ public:
 					ptrInfo->callCnt);
 			}
 		}
-		fprintf_s(outFile, "---------------------------------------------------------------------------------------------\n");
 		
 
 		fclose(outFile);
 
 	}
 	
-	void printToConsole() {
-		for (int infoCnt = 0; infoCnt < 50; infoCnt++) {
-			if (info[infoCnt].callCnt > 0) {
-				info[infoCnt].sum = info[infoCnt].sum - info[infoCnt].max - info[infoCnt].min;
-				info[infoCnt].callCnt -= 2;
-				printf_s("%s %lf %lf %d\n", info[infoCnt].name, info[infoCnt].sum / (double)freq.QuadPart, info[infoCnt].sum / (double)freq.QuadPart / info[infoCnt].callCnt, info[infoCnt].callCnt);
-			}
-		}
-	}
 
 private:
 	Profile info[50];
 
-	__declspec(noinline) int findIdx(const char* name) {
+	int findIdx(const char* name) {
 
 		for (int infoCnt = 0; infoCnt < 50; ++infoCnt) {
 			if (strcmp(name, info[infoCnt].name) == 0) {
