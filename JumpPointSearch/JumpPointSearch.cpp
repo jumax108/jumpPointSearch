@@ -3,6 +3,7 @@
 #include "SimpleProfiler.h"
 #include "myLinkedList.h"
 #include "RedBlackTree.h"
+#include "ObjectFreeList.h"
 #include "JumpPointSearch.h"
 
 #define abs(x) ((x) < 0 ? -(x) : (x))
@@ -39,6 +40,9 @@ CJumpPointSearch::CJumpPointSearch(int width, int height) {
 	_end._x = -1;
 	_end._y = -1;
 
+	nodeFreeList = new CObjectFreeList<stNode>(_width * _height);
+	coordFreeList = new CObjectFreeList<stCoord>(_width * _height);
+
 }
 
 void CJumpPointSearch::pathFindInit() {
@@ -50,8 +54,15 @@ void CJumpPointSearch::pathFindInit() {
 	listClear();
 	int nodeMapByte = sizeof(stNode*) * _width * _height;
 	ZeroMemory(_nodeMap, nodeMapByte);
-	_nodeMap[_start._y * _width + _start._x] = new stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), new stCoord(_start._y, _start._x));
-	_openList->push_back(_nodeMap[_start._y * _width + _start._x]);
+
+	stCoord* coord = coordFreeList->allocObject();
+	new (coord) stCoord(_start._y, _start._x);
+
+	stNode* node = nodeFreeList->allocObject();
+	new (node) stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), coord);
+
+	_nodeMap[_start._y * _width + _start._x] = node;// new stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), new stCoord(_start._y, _start._x));
+	_openList->push_back(node);
 }
 
 bool CJumpPointSearch::isNodeInList(stCoord* coord, linkedList<stNode*>* list) {
@@ -69,16 +80,20 @@ bool CJumpPointSearch::isNodeInList(stCoord* coord, linkedList<stNode*>* list) {
 
 void CJumpPointSearch::makeNode(stCoord* corner, stNode* parent) {
 
-	stNode** newNode = &_nodeMap[corner->_y * _width + corner->_x];
+	int cornerY = corner->_y;
+	int cornerX = corner->_x;
+
+	stNode** newNode = &_nodeMap[cornerY * _width + cornerX];
 
 	if (*newNode != nullptr) {
 		return;
 	}
 
 	int moveCnt = parent->_moveCnt + 1;
-	int distance = abs(_end._y -  corner->_y) + abs(_end._x - corner->_x);
+	int distance = abs(_end._y -  cornerY) + abs(_end._x - cornerX);
 
-    *newNode = new stNode(parent, moveCnt, distance, corner);
+    *newNode = nodeFreeList->allocObject();
+	new (*newNode) stNode(parent, moveCnt, distance, corner);
 
 	_openList->push_back(*newNode);
 
@@ -93,7 +108,6 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 	linkedList<stNode*>::iterator minIter = *findMin(_openList);
 	stNode* selectNode = *minIter;
 	_openList->erase(minIter);
-	//_closeList->push_back(selectNode);
 
 	stCoord* coord = selectNode->_coord;
 
@@ -469,7 +483,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 			#ifdef SPEED_TEST
 				sp->profileEnd("checkOrthogonal");
 			#endif
-			return new stCoord(y, x, dir);
+			stCoord* coord = coordFreeList->allocObject();
+ 			new (coord) stCoord(y, x, dir);
+			return coord;
 		}
 
 		// y - ty 등 계산 예외처리를 한 번에 하면, 
@@ -494,7 +510,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 				#ifdef SPEED_TEST
 					sp->profileEnd("checkOrthogonal");
 				#endif
-				return new stCoord(y, x, dir);
+				stCoord* coord = coordFreeList->allocObject();
+				new (coord) stCoord(y, x, dir);
+				return coord;
 			}
 		}
 
@@ -509,7 +527,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkOrthogonal(DIRECTION dir, int 
 				#ifdef SPEED_TEST
 					sp->profileEnd("checkOrthogonal");
 				#endif
-				return new stCoord(y, x, dir);
+				stCoord* coord = coordFreeList->allocObject();
+				new (coord) stCoord(y, x, dir);
+				return coord;
 			}
 		}
 
@@ -579,15 +599,18 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 			#ifdef SPEED_TEST
 				sp->profileEnd("checkDiagonal");
 			#endif
-			return new stCoord(y, x, dir);
+			stCoord* coord = coordFreeList->allocObject();
+			new (coord) stCoord(y, x, dir);
+			return coord;
 		}
 
 		for (int lineCheckCnt = 0; lineCheckCnt < 2; ++lineCheckCnt) {
 			// 대각선 이동 중 저 멀리서 코너 발견함
 			stCoord* lineCheckResult = checkOrthogonal(lineCheckDir[(int)dir][lineCheckCnt], y, x, color);
 			if (lineCheckResult != nullptr) {
-				stCoord* result = new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
-				delete(lineCheckResult);
+				stCoord* result = coordFreeList->allocObject();
+				new (result) stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
+				coordFreeList->freeObject(lineCheckResult);
 				#ifdef SPEED_TEST
 					sp->profileEnd("checkDiagonal");
 				#endif		
@@ -615,8 +638,10 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 				// 대각선 이동 중 코너 발견함
 				#ifdef SPEED_TEST
 					sp->profileEnd("checkDiagonal");
-				#endif		
-				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
+				#endif
+				stCoord* coord = coordFreeList->allocObject();
+				new (coord) stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
+				return coord;
 			}
 		}
 
@@ -627,7 +652,9 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 				#ifdef SPEED_TEST
 					sp->profileEnd("checkDiagonal");
 				#endif		
-				return new stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
+				stCoord* coord = coordFreeList->allocObject();
+				new (coord) stCoord(y, x, (DIRECTION)((int)dir + (int)DIRECTION::LEFT_UP));
+				return coord;
 			}
 		}
 
@@ -967,7 +994,11 @@ void CJumpPointSearch::listClear() {
 	for (int heightCnt = 0; heightCnt < _height; ++heightCnt) {
 		for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
 			stNode* node = getNode(heightCnt, widthCnt);
-			delete(node);
+			if(node == nullptr){
+				continue;
+			}
+			coordFreeList->freeObject(node->_coord);
+			nodeFreeList->freeObject(node);
 		}
 	}
 
@@ -1380,11 +1411,28 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 			}
 
 			if (createDirection == -1) {
-				_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
+				stCoord* newCoord = coordFreeList->allocObject();
+				new (newCoord) stCoord(coord._y, coord._x);
+
+				stNode* newNode = nodeFreeList->allocObject();
+				new (newNode) stNode(nullptr, 0, 0, newCoord);
+
+				_line->push_back(newNode);
+
+				//_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 				new (&right) stCoord(coord._y, coord._x);
 			}
 			else {
-				_line->push_front(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
+
+				stCoord* newCoord = coordFreeList->allocObject();
+				new (newCoord) stCoord(coord._y, coord._x);
+
+				stNode* newNode = nodeFreeList->allocObject();
+				new (newNode) stNode(nullptr, 0, 0, newCoord);
+
+				_line->push_front(newNode);
+
+				//_line->push_front(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 				new (&left) stCoord(coord._y, coord._x);
 			}
 			if (draw == true) {
@@ -1428,7 +1476,15 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 				return false;
 			}
 
-			_line->push_front(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
+			stCoord* newCoord = coordFreeList->allocObject();
+			new (newCoord) stCoord(coord._y, coord._x);
+
+			stNode* newNode = nodeFreeList->allocObject();
+			new (newNode) stNode(nullptr, 0, 0, newCoord);
+
+			_line->push_front(newNode);
+
+			//_line->push_front(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 			if (draw == true) {
 				stRGB* rgb = lineColor(coord._y, coord._x);
 				rgb->red = 10;
@@ -1481,7 +1537,15 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 				return false;
 			}
 
-			_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
+			stCoord* newCoord = coordFreeList->allocObject();
+			new (newCoord) stCoord(coord._y, coord._x);
+
+			stNode* newNode = nodeFreeList->allocObject();
+			new (newNode) stNode(nullptr, 0, 0, newCoord);
+
+			_line->push_back(newNode);
+
+			//_line->push_back(new stNode(nullptr, 0, 0, new stCoord(coord._y, coord._x)));
 			if (draw == true) {
 				stRGB* rgb = lineColor(coord._y, coord._x);
 				rgb->red = 100;
@@ -1496,8 +1560,12 @@ bool CJumpPointSearch::lineTo(int sx, int sy, int ex, int ey, bool draw, bool wa
 				*subAxis += subAxisMove;
 			}
 
-			stCoord coordDistance(abs(coord._y - ey), abs(coord._x - ex));
-			if (-1 <= coordDistance._x && coordDistance._x <= 1 && -1 <= coordDistance._y && coordDistance._y <= 1) {
+			//stCoord coordDistance(abs(coord._y - ey), abs(coord._x - ex));
+
+			stCoord* coordDistance = coordFreeList->allocObject();
+			new (coordDistance) stCoord(abs(coord._y - ey), abs(coord._x - ex));
+
+			if (-1 <= coordDistance->_x && coordDistance->_x <= 1 && -1 <= coordDistance->_y && coordDistance->_y <= 1) {
 				break;
 			}
 		}
@@ -1514,6 +1582,7 @@ void CJumpPointSearch::nodeSkip() {
 	#ifdef SPEED_TEST
 		sp->profileBegin("nodeSkip");
 	#endif
+
 	for (iterator startNodeIter = pathBegin(); startNodeIter != pathEnd(); ++startNodeIter) {
 
 		bool nodeFound = false;
