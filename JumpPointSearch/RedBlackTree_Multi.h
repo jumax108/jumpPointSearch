@@ -1,27 +1,32 @@
 #pragma once
 
+template<typename T>
+class CObjectFreeList;
+
 class SimpleProfiler;
 class CRedBlackTreeLess;
 
 #if defined(SPEED_TEST)
-	extern SimpleProfiler* sp;
+extern SimpleProfiler* sp;
 #endif
 
+#if defined(_WINDOWS_)
 extern RECT windowRect;
+#endif
 
 template<typename T, class C = CRedBlackTreeLess>
-class CRedBlackTree {
+class CRedBlackTree_Multi {
 
 	friend class CJumpPointSearch;
 
 public:
 
-	struct stNode {
-		
-		stNode(){}
-		stNode(T data, CObjectFreeList<stNode>* freeList, bool isRed = true, bool isNill = false, stNode* parent = nullptr);
 
-		T _data;
+	struct stNode {
+
+		stNode() {}
+
+		CLinkedList<T>* _dataList;
 		stNode* _left;
 		stNode* _right;
 		stNode* _parent;
@@ -30,21 +35,24 @@ public:
 
 	};
 
-	// stNode에 대한 free list
-	CObjectFreeList<stNode>* nodeFreeList;
+	// 노드를 받고 초기화할 함수
+	stNode* allocNode(bool isRed = true, bool isNill = false, stNode* parent = nullptr);
 
-	CRedBlackTree(C compareFunctor = CRedBlackTreeLess());
-	~CRedBlackTree();
+	// 노드를 해제할 함수
+	void freeNode(stNode* node);
+
+	CRedBlackTree_Multi(C compareFunctor = CRedBlackTreeLess());
+	~CRedBlackTree_Multi();
 
 	// 데이터 삽입
 	void insert(T data);
 	// 데이터 삭제
-	void erase(T data) ;
+	void erase(T data);
 
 	// T를 찾아서 T를 줍니다
 	// 현재 tree가 key 구조라서 결국 있냐를 묻는 느낌
 	T find(T data);
-	
+
 	// 전위순회의 순서대로 데이터를 배열에 담아서 전달해줍니다.
 	T* inorder();
 
@@ -54,10 +62,9 @@ public:
 	// 노드 개수 얻기
 	int getNodeNum();
 
-	// 비어있는지 확인
-	bool empty() {
-		return _nodeNum == 0;
-	}
+	// 트리가 비어있는가
+	bool empty();
+
 #ifdef _WINDOWS_
 
 	// 테스트 동작, addNum 만큼의 수를 넣음
@@ -70,11 +77,11 @@ public:
 	// 100개 삽입하는 테스트라면 1개 삽입하고 리턴하고
 	// 다시 함수에 진입하면 또 1개 삽입하고 리턴하는 식
 	// 문제가 있을 때, 한 단계씩 보고 싶어서 제작함
-	static CRedBlackTree<int>* singleCaseTest(int seed);
+	static CRedBlackTree_Multi<int>* singleCaseTest(int seed);
 
 	// 전체 루프를 완료하고 리턴되는 함수
 	// 100개를 삽입하는 테스트라면 100개를 삽입하고 리턴함
-	static CRedBlackTree<int>* test(CRedBlackTree<int>*);
+	static CRedBlackTree_Multi<int>* test(CRedBlackTree_Multi<int>*);
 
 	// 출력 관련
 	// treeViewer에 출력함
@@ -83,6 +90,13 @@ public:
 #endif
 
 private:
+
+
+	// stNode에 대한 free list
+	CObjectFreeList<stNode>* nodeFreeList;
+
+	// CLinekdList 에 대한 free list
+	CObjectFreeList<CLinkedList<T>>* listFreeList;
 
 	// 비교 펑터
 	C _compareFunctor;
@@ -107,58 +121,76 @@ private:
 	// 자체 진단용 함수
 	// 트리가 현재 정상적인지를 판단함
 	void diagnosis(stNode* node = _root);
-	
+
+#if defined(_VECTOR_)
 	// 트리를 벡터로 변환해서 전달해줌
 	// 테스트용으로 쓰임
 	void treeToList(std::vector<T>* vector, std::vector<T>* blackNumList, stNode* node, int blackNum = 0);
+#endif
 
 	// 실질적으로 전위순회하는 함수
 	void inorderLoop(T* arr, int* index, stNode* node);
 
-
 #ifdef _WINDOWS_
 	HDC _hdc;
-	int printLoop(stNode* node, int deepth, int* printCnt, int x) ;
+	int printLoop(stNode* node, int deepth, int* printCnt, int x);
 #endif
 
 };
 
-class CRedBlackTreeLess{
+#ifndef _REDBLACKTREELESS_
+#define _REDBLACKTREELESS_
+
+class CRedBlackTreeLess {
 public:
 	template<typename T>
-	bool operator()(T left, T right){
+	bool operator()(T left, T right) {
 		return left < right;
 	}
 };
 
-template <typename T, class C>
-CRedBlackTree<T, C>::stNode::stNode(T data, CObjectFreeList<stNode>* freeList, bool isRed, bool isNill, stNode* parent){
-	
-	_data = data;
-	if (isNill == false) {
-		_left = freeList->allocObject();//new stNode(0, false, true, this);
-		new (_left) stNode(0, freeList, false, true, this);
+#endif
 
-		_right = freeList->allocObject();//new stNode(0, false, true, this);
-		new (_right) stNode(0, freeList, false, true, this);
+template <typename T, class C>
+typename CRedBlackTree_Multi<T, C>::stNode* CRedBlackTree_Multi<T,C>::allocNode(bool isRed = true, bool isNill = false, stNode* parent = nullptr){
+
+	stNode* node = nodeFreeList->allocObject();
+	stNode** left = &node->_left;
+	stNode** right = &node->_right;
+
+	node->_dataList = listFreeList->allocObject();
+
+	if (isNill == false) {
+
+		*left = allocNode(false, true, node);
+		*right = allocNode(false, true, node);
+
 	}
 	else {
-		_left = nullptr;
-		_right = nullptr;
+		*left = nullptr;
+		*right = nullptr;
 	}
-	_parent = parent;
-	_isRed = isRed;
-	_isNill = isNill;
-	
+
+	node->_parent = parent;
+	node->_isRed = isRed;
+	node->_isNill = isNill;
+
+	return node;
 }
 
 template <typename T, class C>
-CRedBlackTree<T, C>::CRedBlackTree(C compareFunctor){
+void CRedBlackTree_Multi<T, C>::freeNode(stNode* node){
+	listFreeList->freeObject(node->_dataList);
+	nodeFreeList->freeObject(node);
+}
 
+template <typename T, class C>
+CRedBlackTree_Multi<T, C>::CRedBlackTree_Multi(C compareFunctor) {
+
+	listFreeList = new CObjectFreeList<CLinkedList<T>>(100);
 	nodeFreeList = new CObjectFreeList<stNode>(100);
 
-	_root = nodeFreeList->allocObject();// new stNode(0, false, true);
-	new (_root) stNode(0, nodeFreeList, false, true);
+	_root = allocNode(false, true);
 
 	_compareFunctor = compareFunctor;
 	_nodeNum = 0;
@@ -166,61 +198,71 @@ CRedBlackTree<T, C>::CRedBlackTree(C compareFunctor){
 }
 
 template <typename T, class C>
-CRedBlackTree<T, C>::~CRedBlackTree() {
+CRedBlackTree_Multi<T, C>::~CRedBlackTree_Multi() {
 
 	if (_root->_isNill == true) {
-		//delete(_root);
-		nodeFreeList->freeObject(_root);
+		freeNode(_root);
 		return;
 	}
 
 	while (_root->_left->_isNill == false || _root->_right->_isNill == false) {
-		erase(_root->_data);
+		erase(_root->_dataList->begin()->value);
 	}
 
-	nodeFreeList->freeObject(_root->_left);
-	nodeFreeList->freeObject(_root->_right);
-	nodeFreeList->freeObject(_root);
+	freeNode(_root->_left);
+	freeNode(_root->_right);
+	freeNode(_root);
 
 	delete nodeFreeList;
 	nodeFreeList = nullptr;
+
+	delete listFreeList;
+	listFreeList = nullptr;
 }
 
 template <typename T, class C>
-void CRedBlackTree<T, C>::insert(T data) {
+void CRedBlackTree_Multi<T, C>::insert(T data) {
 
-	#if defined(SPEED_TEST)
-		sp->profileBegin("insert");
-	#endif
+#if defined(SPEED_TEST)
+	//sp->profileBegin("insert");
+#endif
 
 	do {
-		stNode* newNode = nodeFreeList->allocObject();//new stNode(data);
-		new (newNode) stNode(data, nodeFreeList);
+		//stNode* newNode = nodeFreeList->allocObject();
+		//new (newNode) stNode(nodeFreeList);
+
+		stNode* newNode = allocNode();
 
 		if (_root->_isNill == true) {
-			//delete(_root);
-			nodeFreeList->freeObject(_root);
+			
+			freeNode(_root);
 			newNode->_isRed = false;
 			_root = newNode;
-			_nodeNum += 1;
+			newNode->_dataList->push_back(data);
+			_nodeNum = 1;
 			break;
 		}
 
 		stNode* node = _root;
 		while (true) {
-			if (_compareFunctor(node->_data, data) == true) {
+
+			CLinkedList<T>* list = node->_dataList;
+			T value = list->begin()->value;
+
+			if (_compareFunctor(value, data) == true) {
 				if (node->_right->_isNill == true) {
-					nodeFreeList->freeObject(node->_right);
-					//delete(node->_right);
+
+					freeNode(node->_right);
 					node->_right = newNode;
-					newNode->_parent = node;;
+					newNode->_dataList->push_back(data);
+					newNode->_parent = node;
 					insertBalance(newNode);
 
 					_nodeNum += 1;
 
-					#if defined(LOGIC_TEST)
-						diagnosis(_root);
-					#endif
+#if defined(LOGIC_TEST)
+					diagnosis(_root);
+#endif
 
 					// return 하는 상황. profile 처리를 return 직전에 해야해서 처리하러 goto 로 이동
 					// break 하면 노드가 delete 되어버림
@@ -228,19 +270,20 @@ void CRedBlackTree<T, C>::insert(T data) {
 				}
 				node = node->_right;
 			}
-			else if (_compareFunctor(data, node->_data) == true) {
+			else if (_compareFunctor(data, value) == true) {
 				if (node->_left->_isNill == true) {
-					nodeFreeList->freeObject(node->_left);
-					//delete(node->_left);
+
+					freeNode(node->_left);
 					node->_left = newNode;
+					newNode->_dataList->push_back(data);
 					newNode->_parent = node;
 					insertBalance(newNode);
 
 					_nodeNum += 1;
 
-					#if defined(LOGIC_TEST)
-						diagnosis(_root);
-					#endif
+#if defined(LOGIC_TEST)
+					diagnosis(_root);
+#endif
 
 					// return 하는 상황. profile 처리를 return 직전에 해야해서 처리하러 goto 로 이동
 					// break 하면 노드가 delete 되어버림
@@ -249,68 +292,85 @@ void CRedBlackTree<T, C>::insert(T data) {
 				node = node->_left;
 			}
 			else {
+				list->push_back(data);
 				break;
 			}
 		}
-
-		//delete(newNode);
-		nodeFreeList->freeObject(newNode);
+		freeNode(newNode);
 	} while (false);
 
-	FIN:;
+FIN:;
 
-	#if defined(SPEED_TEST)
-		sp->profileEnd("insert");
-	#endif
+#if defined(SPEED_TEST)
+	//sp->profileEnd("insert");
+#endif
 
 }
 
 template <typename T, class C>
-void CRedBlackTree<T, C>::erase(T data) {
+void CRedBlackTree_Multi<T, C>::erase(T data) {
 
-	#if defined(SPEED_TEST)
-		sp->profileBegin("erase");
-	#endif
+#if defined(SPEED_TEST)
+	//sp->profileBegin("erase");
+#endif
 
 	stNode** node = &_root;
 
 	while ((*node)->_isNill == false) {
 
-		if (_compareFunctor((*node)->_data, data) == true) {
+		CLinkedList<T>* list = (*node)->_dataList;
+		T value = list->begin()->value;
+
+		if (_compareFunctor(value, data) == true) {
 			//right
 			node = &(*node)->_right;
 		}
-		else if (_compareFunctor(data, (*node)->_data) == true) {
+		else if (_compareFunctor(data, value) == true) {
 			//left
 			node = &(*node)->_left;
 		}
 		else {
 			// correct
+
+			// 맞으면 리스트에서 해당 항목 제거
+			typename CLinkedList<T>::iterator iter = list->begin();
+			for (; iter != list->end(); ++iter) {
+				if (*iter == data) {
+					list->erase(iter);
+					break;
+				}
+			}
+
+			if (list->empty() == false) {
+				break;
+			}
+
+			// 제거 했는데 리스트가 비어있다면 해당 노드 제거
 			bool isRed;
 			stNode* erasedNode = eraseNode(node, &isRed);
 			_nodeNum -= 1;
 			if (isRed == false) {
 				eraseBalance(erasedNode);
 
-				#if defined(LOGIC_TEST)
-					diagnosis(_root);
-				#endif
+#if defined(LOGIC_TEST)
+				diagnosis(_root);
+#endif
 			}
 			break;
 		}
 	}
 
-	#if defined(SPEED_TEST)
-		sp->profileEnd("erase");
-	#endif
+#if defined(SPEED_TEST)
+	//sp->profileEnd("erase");
+#endif
 }
 
 template <typename T, class C>
-T CRedBlackTree<T, C>::find(T data) {
+T CRedBlackTree_Multi<T, C>::find(T data) {
 
-	#if defined(SPEED_TEST)
-		sp->profileBegin("find");
-	#endif
+#if defined(SPEED_TEST)
+	sp->profileBegin("find");
+#endif
 
 	stNode* node = _root;
 	T result = NULL;
@@ -321,25 +381,25 @@ T CRedBlackTree<T, C>::find(T data) {
 			break;
 		}
 
-		if (_compareFunctor(data, node->_data) == true) {
+		if (_compareFunctor(data, node->_dataList->begin()->value) == true) {
 			// data가 더 작음
 			node = node->_left;
 		}
-		else if (_compareFunctor(node->_data, data) == true) {
+		else if (_compareFunctor(node->_dataList->begin()->value, data) == true) {
 			// data가 더 큼
 			node = node->_right;
 		}
 		else {
 			// 같음
-			result = node->_data;
+			result = node->_dataList->begin()->value;
 			break;
 		}
 
 	}
 
-	#if defined(SPEED_TEST)
-		sp->profileEnd("find");
-	#endif
+#if defined(SPEED_TEST)
+	sp->profileEnd("find");
+#endif
 
 	return result;
 
@@ -347,9 +407,9 @@ T CRedBlackTree<T, C>::find(T data) {
 
 #if defined(_WINDOWS_)
 template <typename T, class C>
-CRedBlackTree<int>* CRedBlackTree<T, C>::singleCaseTest(int seed) {
+CRedBlackTree_Multi<int>* CRedBlackTree_Multi<T, C>::singleCaseTest(int seed) {
 
-	static CRedBlackTree<int>* tree = nullptr;
+	static CRedBlackTree_Multi<int>* tree = nullptr;
 
 	static std::vector<int>* addNumList = nullptr;
 	static std::vector<int>* eraseIndexList = nullptr;
@@ -471,7 +531,7 @@ CRedBlackTree<int>* CRedBlackTree<T, C>::singleCaseTest(int seed) {
 }
 
 template <typename T, class C>
-CRedBlackTree<int>* CRedBlackTree<T, C>::test(CRedBlackTree<int>* tree) {
+CRedBlackTree_Multi<int>* CRedBlackTree_Multi<T, C>::test(CRedBlackTree_Multi<int>* tree) {
 
 	//CRedBlackTree<int>* tree = nullptr;
 
@@ -484,6 +544,7 @@ CRedBlackTree<int>* CRedBlackTree<T, C>::test(CRedBlackTree<int>* tree) {
 	std::vector<int>::iterator eraseIndexListIter;
 
 	int seed = rand() % 10000;
+	//int seed = 6699;
 	printf("seed : %d\n", seed);
 	srand(seed);
 
@@ -583,7 +644,7 @@ CRedBlackTree<int>* CRedBlackTree<T, C>::test(CRedBlackTree<int>* tree) {
 }
 
 template <typename T, class C>
-void CRedBlackTree<T, C>::print(HDC hdc, int x) {
+void CRedBlackTree_Multi<T, C>::print(HDC hdc, int x) {
 	do {
 		if (_root->_isNill == true) {
 			break;
@@ -612,12 +673,12 @@ void CRedBlackTree<T, C>::print(HDC hdc, int x) {
 		TextOutW(hdc, left + 10, top + 100, L"선택값 제거 : e", 10);
 
 	}
-	
+
 }
 #endif
 
 template <typename T, class C>
-typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node, bool* isRed) {
+typename CRedBlackTree_Multi<T, C>::stNode* CRedBlackTree_Multi<T, C>::eraseNode(stNode** node, bool* isRed) {
 
 	stNode* left = (*node)->_left;
 	stNode* right = (*node)->_right;
@@ -631,10 +692,10 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 		// 노드의 우측 자식 존재
 
 		right->_parent = (*node)->_parent;
-		nodeFreeList->freeObject(left);
+		freeNode(left);
 		//delete(left); // 좌측 닐 제거
 		*isRed = (*node)->_isRed;
-		nodeFreeList->freeObject(*node);
+		freeNode(*node);
 		//delete(*node); // 현재 노드 제거
 		*node = right; // 부모 노드가 바라보고 있는 노드를 우측 노드로 변경
 		return *node;
@@ -645,10 +706,10 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 		// 노드의 좌측 자식 존재
 
 		left->_parent = (*node)->_parent;
-		nodeFreeList->freeObject(right);
+		freeNode(right);
 		//delete(right); // 우측 닐 제거
 		*isRed = (*node)->_isRed;
-		nodeFreeList->freeObject(*node);
+		freeNode(*node);
 		//delete(*node); // 현재 노드 제거
 		*node = left;  // 부모가 바라보고 있는 노드를 좌측 노드로 변경
 		return *node;
@@ -661,7 +722,7 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 
 		if (left->_right->_isNill == true) {
 
-			nodeFreeList->freeObject(left->_right);
+			freeNode(left->_right);
 			//delete(left->_right); // 닐 제거
 
 			// 노드의 왼쪽 자식의 우측 자식이 없을 때
@@ -669,12 +730,12 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 			// 노드의 왼쪽 자식과 노드의 데이터를 교체하고
 			// 노드의 왼쪽 자식의 왼쪽 자식을 노드와 연결
 
-			(*node)->_data = left->_data; // 노드의 데이터를 왼쪽 자식의 데이터로 변경
+			(*node)->_dataList = left->_dataList; // 노드의 데이터를 왼쪽 자식의 데이터로 변경
 			(*node)->_left = left->_left; // 노드의 왼쪽 자식을 왼쪽 자식의 왼쪽 자식으로 변경
 			left->_left->_parent = *node;
 			*isRed = left->_isRed;
 
-			nodeFreeList->freeObject(left);
+			freeNode(left);
 			//delete(left); // 왼쪽 노드 제거
 			return (*node)->_left;
 
@@ -688,10 +749,11 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 			while ((*lastRightNode)->_right->_isNill == false) { // 우측 자식이 닐이 아니면
 				lastRightNode = &((*lastRightNode)->_right); // 우측 자식으로 교체
 			}
-			nodeFreeList->freeObject((*lastRightNode)->_right);
+
+			freeNode((*lastRightNode)->_right);
 			//delete((*lastRightNode)->_right); // 닐제거
 
-			(*node)->_data = (*lastRightNode)->_data; // 노드의 값을 최우측노드의 값으로 변경
+			(*node)->_dataList = (*lastRightNode)->_dataList; // 노드의 값을 최우측노드의 값으로 변경
 
 			// 최우측 노드의 좌측 노드 존재 가능
 			// 해당 노드는 최우측 노드의 부모와 연결
@@ -700,7 +762,8 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 			stNode* lastNodeLeft = (*lastRightNode)->_left; // 최우측 노드의 좌측 노드
 			lastNodeLeft->_parent = (*lastRightNode)->_parent;
 			*isRed = (*lastRightNode)->_isRed;
-			nodeFreeList->freeObject(*lastRightNode);
+
+			freeNode(*lastRightNode);
 			//delete(*lastRightNode); // 최우측 노드 제거
 			*lastRightNode = lastNodeLeft; // 최우측 노드의 부모 노드와 최우측 노드의 좌측 노드 연결
 
@@ -713,7 +776,7 @@ typename CRedBlackTree<T,C>::stNode* CRedBlackTree<T,C>::eraseNode(stNode** node
 }
 
 template <typename T, class C>
-void CRedBlackTree<T,C>::insertBalance(stNode* node) {
+void CRedBlackTree_Multi<T, C>::insertBalance(stNode* node) {
 
 	// 노드가 루트면 탈출
 	if (node == _root) {
@@ -865,7 +928,7 @@ void CRedBlackTree<T,C>::insertBalance(stNode* node) {
 }
 
 template <typename T, class C>
-void CRedBlackTree<T,C>::leftRotation(stNode* parent, stNode* right) {
+void CRedBlackTree_Multi<T, C>::leftRotation(stNode* parent, stNode* right) {
 
 	right->_parent = parent->_parent;
 	if (parent->_parent != nullptr) {
@@ -889,7 +952,7 @@ void CRedBlackTree<T,C>::leftRotation(stNode* parent, stNode* right) {
 }
 
 template <typename T, class C>
-void CRedBlackTree<T,C>::rightRotation(stNode* parent, stNode* left) {
+void CRedBlackTree_Multi<T, C>::rightRotation(stNode* parent, stNode* left) {
 
 	left->_parent = parent->_parent;
 	if (parent->_parent != nullptr) {
@@ -914,7 +977,7 @@ void CRedBlackTree<T,C>::rightRotation(stNode* parent, stNode* left) {
 }
 
 template <typename T, class C>
-void CRedBlackTree<T,C>::eraseBalance(stNode* node) {
+void CRedBlackTree_Multi<T, C>::eraseBalance(stNode* node) {
 
 	if (node == _root) {
 		_root->_isRed = false;
@@ -1110,7 +1173,7 @@ void CRedBlackTree<T,C>::eraseBalance(stNode* node) {
 }
 
 template <typename T, class C>
-void CRedBlackTree<T,C>::diagnosis(stNode* node) {
+void CRedBlackTree_Multi<T, C>::diagnosis(stNode* node) {
 
 	if (node->_left != nullptr) {
 
@@ -1118,9 +1181,9 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 			// left의 부모가 내가 아닐 경우
 			printf("{\n");
 			printf("\t좌측 노드의 부모가 현재 노드가 아닙니다.\n");
-			printf("\t현재 노드 값 : %d\n", node->_data);
-			printf("\t좌측 노드 값 : %d\n", node->_left->_data);
-			printf("\t좌측 노드 부모 값 : %d\n", node->_left->_parent->_data);
+			printf("\t현재 노드 값 : %d\n", node->_dataList->begin()->value);
+			printf("\t좌측 노드 값 : %d\n", node->_left->_dataList->begin()->value);
+			printf("\t좌측 노드 부모 값 : %d\n", node->_left->_parent->_dataList->begin()->value);
 			printf("}\n");
 			system("PAUSE>NUL");
 		}
@@ -1130,7 +1193,7 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 
 				printf("{\n");
 				printf("\t나와 내 왼쪽 노드가 빨강입니다.\n");
-				printf("\tnode data: %d\n", node->_data);
+				printf("\tnode data: %d\n", node->_dataList->begin()->value);
 				printf("}\n");
 				system("PAUSE>NUL");
 			}
@@ -1142,7 +1205,7 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 		// left가 널인데, 내가 닐 노드가 아니면 오류
 		printf("{\n");
 		printf("\t좌측 노드가 Null 이지만 내가 닐 노드가 아닙니다.\n");
-		printf("\tnode data: %d\n", node->_data);
+		printf("\tnode data: %d\n", node->_dataList->begin()->value);
 		printf("}\n");
 		system("PAUSE>NUL");
 	}
@@ -1154,7 +1217,7 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 			// 닐노드 색 변경
 			printf("{\n");
 			printf("\tNill 노드가 빨강색입니다.\n");
-			printf("\tnode data: %d\n", node->_data);
+			printf("\tnode data: %d\n", node->_dataList->begin()->value);
 			printf("}\n");
 			system("PAUSE>NUL");
 		}
@@ -1166,9 +1229,9 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 			// right의 부모가 내가 아닐 경우
 			printf("{\n");
 			printf("\t우측 노드의 부모가 현재 노드가 아닙니다.\n");
-			printf("\t현재 노드 값 : %d\n", node->_data);
-			printf("\t우측 노드 값 : %d\n", node->_right->_data);
-			printf("\t우측 노드 부모 값 : %d\n", node->_right->_parent->_data);
+			printf("\t현재 노드 값 : %d\n", node->_dataList->begin()->value);
+			printf("\t우측 노드 값 : %d\n", node->_right->_dataList->begin()->value);
+			printf("\t우측 노드 부모 값 : %d\n", node->_right->_parent->_dataList->begin()->value);
 			printf("}\n");
 			system("PAUSE>NUL");
 		}
@@ -1178,7 +1241,7 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 
 				printf("{\n");
 				printf("\t나와 내 오른 노드가 빨강입니다.\n");
-				printf("\tnode data: %d\n", node->_data);
+				printf("\tnode data: %d\n", node->_dataList->begin()->value);
 				printf("}\n");
 				system("PAUSE>NUL");
 			}
@@ -1190,15 +1253,16 @@ void CRedBlackTree<T,C>::diagnosis(stNode* node) {
 		// right가 널인데, 내가 닐 노드가 아니면 오류
 		printf("{\n");
 		printf("\t우측 노드가 Null 이지만 내가 닐 노드가 아닙니다.\n");
-		printf("\tnode data: %d\n", node->_data);
+		printf("\tnode data: %d\n", node->_dataList->begin()->value);
 		printf("}\n");
 		system("PAUSE>NUL");
 	}
 
 }
 
+#if defined(_VECTOR_)
 template <typename T, class C>
-void CRedBlackTree<T,C>::treeToList(std::vector<T>* vector, std::vector<T>* blackNumList, stNode* node, int blackNum) {
+void CRedBlackTree_Multi<T, C>::treeToList(std::vector<T>* vector, std::vector<T>* blackNumList, stNode* node, int blackNum) {
 	blackNum += (node->_isRed == false);
 	if (node->_left->_isNill == false) {
 		treeToList(vector, blackNumList, node->_left, blackNum);
@@ -1207,7 +1271,8 @@ void CRedBlackTree<T,C>::treeToList(std::vector<T>* vector, std::vector<T>* blac
 		blackNumList->push_back(blackNum);
 	}
 
-	vector->push_back(node->_data);
+	T value = node->_dataList->begin()->value;
+	vector->push_back(value);
 
 	if (node->_right->_isNill == false) {
 		treeToList(vector, blackNumList, node->_right, blackNum);
@@ -1217,10 +1282,11 @@ void CRedBlackTree<T,C>::treeToList(std::vector<T>* vector, std::vector<T>* blac
 	}
 
 }
+#endif
 
 #if defined(_WINDOWS_)
 template <typename T, class C>
-int CRedBlackTree<T,C>::printLoop(stNode* node, int deepth, int* printCnt, int x) {
+int CRedBlackTree_Multi<T, C>::printLoop(stNode* node, int deepth, int* printCnt, int x) {
 
 	if (node->_left->_isNill == false) {
 		int leftPrintCnt = printLoop(node->_left, deepth + 1, printCnt, x);
@@ -1265,7 +1331,7 @@ int CRedBlackTree<T,C>::printLoop(stNode* node, int deepth, int* printCnt, int x
 
 
 	WCHAR text[10] = { 0, };
-	_itow_s(node->_data, text, 10, 10);
+	_itow_s(node->_dataList->begin()->value, text, 10, 10);
 	TextOutW(_hdc, ellipseRect.left + 40 - x, ellipseRect.top + 40, text, wcslen(text));
 
 	SetTextColor(_hdc, RGB(0, 0, 0));
@@ -1295,41 +1361,41 @@ int CRedBlackTree<T,C>::printLoop(stNode* node, int deepth, int* printCnt, int x
 #endif
 
 template <typename T, class C>
-T* CRedBlackTree<T,C>::inorder(){
+T* CRedBlackTree_Multi<T, C>::inorder() {
 
-	#if defined(SPEED_TEST)
-		sp->profileBegin("Inorder");
-	#endif
+#if defined(SPEED_TEST)
+	sp->profileBegin("Inorder");
+#endif
 
 	T* arr = new T[_nodeNum];
 	int index = 0;
 
 	inorderLoop(arr, &index, _root);
 
-	#if defined(SPEED_TEST)
-		sp->profileEnd("Inorder");
-	#endif
+#if defined(SPEED_TEST)
+	sp->profileEnd("Inorder");
+#endif
 
 	return arr;
-	
+
 }
 
 template <typename T, class C>
-void CRedBlackTree<T, C>::inorderLoop(T* arr, int* index, stNode* node){
-	
+void CRedBlackTree_Multi<T, C>::inorderLoop(T* arr, int* index, stNode* node) {
+
 	stNode* left = node->_left;
 	stNode* right = node->_right;
 
-	if(left->_isNill == false){
+	if (left->_isNill == false) {
 
 		inorderLoop(arr, index, left);
 
 	}
 
-	arr[*index] = node->_data;
+	arr[*index] = node->_dataList->begin()->value;
 	*index += 1;
 
-	if(right->_isNill == false){
+	if (right->_isNill == false) {
 
 		inorderLoop(arr, index, right);
 
@@ -1338,34 +1404,41 @@ void CRedBlackTree<T, C>::inorderLoop(T* arr, int* index, stNode* node){
 }
 
 template <typename T, class C>
-void CRedBlackTree<T, C>::clear(){
+void CRedBlackTree_Multi<T, C>::clear() {
 
 	if (_root->_isNill == true) {
-		nodeFreeList->freeObject(_root);
+		freeNode(_root);
+
 		//delete(_root);
 		return;
 	}
 
 	while (_root->_left->_isNill == false || _root->_right->_isNill == false) {
-		erase(_root->_data);
+		erase(_root->_dataList->begin()->value);
 	}
 
-	nodeFreeList->freeObejct(_root->_left);
-	nodeFreeList->freeObejct(_root->_right);
-	nodeFreeList->freeObejct(_root);
+	freeNode(_root->left);
+	freeNode(_root->right);
+	freeNodE(_root);
 
 	//delete(_root->_left);
 	//delete(_root->_right);
 	//delete(_root);
-	
-	_root = nodeFreeList->allocObject();// new stNode(0, false, true);
-	new (_root) stNode(0, false, true);
+
+	_root = allocNode(false, true);
+	//_root = nodeFreeList->allocObject();// new stNode(0, false, true);
+	//new (_root) stNode(nodeFreeList, false, true);
 
 	_nodeNum = 0;
-	
+
 }
 
 template <typename T, class C>
-int CRedBlackTree<T, C>::getNodeNum(){
+int CRedBlackTree_Multi<T, C>::getNodeNum() {
 	return _nodeNum;
+}
+
+template <typename T, class C>
+bool CRedBlackTree_Multi<T, C>::empty() {
+	return _nodeNum == 0;
 }

@@ -1,25 +1,41 @@
 ﻿  JumpPointSearch.cpp
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(881,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(881,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(268,9): error C2039: 'sort': 'std'의 멤버가 아닙니다.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\vector(24): message : 'std' 선언을 참조하십시오.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(1189): message : 컴파일되는 클래스 템플릿 인스턴스화 'CRedBlackTree<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(309,3): error C3861: 'sort': 식별자를 찾을 수 없습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(309,7): message : 'sort': 인수가 템플릿 매개 변수에 종속되지 않으므로 함수 선언을 사용할 수 있어야 합니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(390,8): error C2039: 'sort': 'std'의 멤버가 아닙니다.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\vector(24): message : 'std' 선언을 참조하십시오.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(420,3): error C3861: 'sort': 식별자를 찾을 수 없습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(420,7): message : 'sort': 인수가 템플릿 매개 변수에 종속되지 않으므로 함수 선언을 사용할 수 있어야 합니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1053,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1053,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
   main.cpp
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\main.cpp(161,12): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\main.cpp(161,12): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(268,9): error C2039: 'sort': 'std'의 멤버가 아닙니다.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\vector(24): message : 'std' 선언을 참조하십시오.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(1189): message : 컴파일되는 클래스 템플릿 인스턴스화 'CRedBlackTree<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(309,3): error C3861: 'sort': 식별자를 찾을 수 없습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(309,7): message : 'sort': 인수가 템플릿 매개 변수에 종속되지 않으므로 함수 선언을 사용할 수 있어야 합니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(390,8): error C2039: 'sort': 'std'의 멤버가 아닙니다.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\vector(24): message : 'std' 선언을 참조하십시오.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(420,3): error C3861: 'sort': 식별자를 찾을 수 없습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree.h(420,7): message : 'sort': 인수가 템플릿 매개 변수에 종속되지 않으므로 함수 선언을 사용할 수 있어야 합니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(178,12): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(178,12): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
   코드를 생성하고 있습니다...
-C:\Users\user\Desktop\github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(586): warning C4172: 지역 변수 또는 임시: minIter의 주소를 반환하고 있습니다.
-  JumpPointSearch.vcxproj -> C:\Users\user\Desktop\github\JumpPointSearch\x64\Debug\JumpPointSearch.exe

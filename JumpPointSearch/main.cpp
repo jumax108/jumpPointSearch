@@ -4,9 +4,9 @@
 #include "framework.h"
 #include "SimpleProfiler.h"
 #include "Resource.h"
-#include "myLinkedList.h"
-#include "RedBlackTree.h"
+#include "linkedList.h"
 #include "ObjectFreeList.h"
+#include "RedBlackTree_Multi.h"
 #include "JumpPointSearch.h"
 
 #define MAX_LOADSTRING 100

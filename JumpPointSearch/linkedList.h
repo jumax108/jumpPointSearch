@@ -1,7 +1,7 @@
 #pragma once
 
 template<typename T>
-class linkedList {
+class CLinkedList {
 public:
 
 	struct _node {
@@ -48,14 +48,6 @@ public:
 			return this;
 		}
 
-		inline iterator operator+(int addNum) {
-			iterator iter = *this;
-			for (int addCnt = 0; addCnt < addNum; ++addCnt) {
-				++iter;
-			}
-			return iter;
-		}
-
 
 
 		inline iterator* operator--() {
@@ -73,10 +65,10 @@ public:
 
 	private:
 		_node *node;
-		friend class linkedList;
+		friend class CLinkedList;
 	};
 
-	linkedList();
+	CLinkedList();
 
 	void push_front(
 		const T const value // 저장할 값
@@ -90,28 +82,26 @@ public:
 		_node* parent  // 이 노드의 자식으로 저장됩니다.
 	);
 
+	bool empty();
+
 	iterator erase(
 		iterator iter // 지울 노드를 전달합니다.
 	) {
 
-		linkedList<T>::_node* node = iter.node;
-		linkedList<T>::_node* child = node->child;
+		CLinkedList<T>::_node* node = iter.node;
+		CLinkedList<T>::_node* child = node->child;
 
 		node->child->parent = node->parent;
 		node->parent->child = node->child;
 
-		linkedList<T>::iterator* nextIter = ++iter;
+		iterator nextIter = *(++iter);
 
 		free(node);
 
-		return *(nextIter);
+		return nextIter;
 	}
 
 	void clear();
-
-	bool empty() {
-		return head.child == &tail;
-	}
 
 	inline _node* begin() {
 		return head.child;
@@ -121,7 +111,7 @@ public:
 		return &tail;
 	}
 
-	~linkedList();
+	~CLinkedList();
 
 
 
@@ -131,25 +121,8 @@ private:
 
 };
 
-
-/*
 template<typename T>
-linkedList<T>::iterator linkedList<T>::erase(linkedList<T>::iterator iter) {
-
-	linkedList<T>::_node* node = iter.node;
-	linkedList<T>::_node* child = node->child;
-
-	node->child->parent = node->parent;
-	node->parent->child = node->child;
-
-	free(node);
-
-	return *(++iter);
-}*/
-
-
-template<typename T>
-linkedList<T>::linkedList(){
+CLinkedList<T>::CLinkedList(){
 	
 	head.parent = nullptr;
 	head.child = &tail;
@@ -159,14 +132,14 @@ linkedList<T>::linkedList(){
 }
 
 template<typename T>
-linkedList<T>::~linkedList() {
+CLinkedList<T>::~CLinkedList() {
 	clear();
 }
 
 template<typename T>
-void linkedList<T>::insert(T value, linkedList<T>::_node* parent) {
+void CLinkedList<T>::insert(T value, CLinkedList<T>::_node* parent) {
 
-	_node* node = (linkedList<T>::_node*)malloc(sizeof(linkedList<T>::_node));
+	_node* node = (CLinkedList<T>::_node*)malloc(sizeof(CLinkedList<T>::_node));
 
 	node->value = value;
 	node->parent = parent;
@@ -178,8 +151,8 @@ void linkedList<T>::insert(T value, linkedList<T>::_node* parent) {
 }
 
 template<typename T>
-void linkedList<T>::push_front(const T const value) {
-	_node* node = (linkedList<T>::_node*)malloc(sizeof(linkedList<T>::_node));
+void CLinkedList<T>::push_front(const T const value) {
+	_node* node = (CLinkedList<T>::_node*)malloc(sizeof(CLinkedList<T>::_node));
 
 	node->value = value;
 
@@ -191,8 +164,8 @@ void linkedList<T>::push_front(const T const value) {
 }
 
 template<typename T>
-void linkedList<T>::push_back(const T const value) {
-	_node* node = (linkedList<T>::_node*)malloc(sizeof(linkedList<T>::_node));
+void CLinkedList<T>::push_back(const T const value) {
+	_node* node = (CLinkedList<T>::_node*)malloc(sizeof(CLinkedList<T>::_node));
 
 	node->value = value;
 	node->parent = tail.parent;
@@ -203,8 +176,15 @@ void linkedList<T>::push_back(const T const value) {
 }
 
 template<typename T>
-void linkedList<T>::clear() {
-	for (linkedList<T>::iterator iter = begin(); iter != end(); ) {
+void CLinkedList<T>::clear() {
+	for (CLinkedList<T>::iterator iter = begin(); iter != end(); ) {
 		iter = erase(iter);
 	}
+}
+
+template<typename T>
+bool CLinkedList<T>::empty(){
+
+	return head.child == &tail;
+
 }

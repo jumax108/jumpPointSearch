@@ -1,9 +1,8 @@
-﻿
-#include "framework.h"
+﻿#include "framework.h"
 #include "SimpleProfiler.h"
-#include "myLinkedList.h"
-#include "RedBlackTree.h"
+#include "linkedList.h"
 #include "ObjectFreeList.h"
+#include "RedBlackTree_Multi.h"
 #include "JumpPointSearch.h"
 
 #define abs(x) ((x) < 0 ? -(x) : (x))
@@ -29,10 +28,12 @@ CJumpPointSearch::CJumpPointSearch(int width, int height) {
 	_nodeMap = (stNode**)malloc(nodeMapByte);
 	ZeroMemory(_nodeMap, nodeMapByte);
 
-	_openList = new linkedList<stNode*>();
-	_closeList = new linkedList<stNode*>();
-	_path = new linkedList<stNode*>();
-	_line = new linkedList<stNode*>();
+	_openList = new CLinkedList<stNode*>();
+	//_openList = new CRedBlackTree_Multi<stNode*, CJpsLess>(CJpsLess());
+
+
+	_path = new CLinkedList<stNode*>();
+	_line = new CLinkedList<stNode*>();
 
 	_start._x = -1;
 	_start._y = -1;
@@ -63,11 +64,12 @@ void CJumpPointSearch::pathFindInit() {
 
 	_nodeMap[_start._y * _width + _start._x] = node;// new stNode(nullptr, 0, abs(_end._x - _start._x) + abs(_end._y - _start._y), new stCoord(_start._y, _start._x));
 	_openList->push_back(node);
+	//_openList->insert(node);
 }
 
-bool CJumpPointSearch::isNodeInList(stCoord* coord, linkedList<stNode*>* list) {
+bool CJumpPointSearch::isNodeInList(stCoord* coord, CLinkedList<stNode*>* list) {
 
-	for (linkedList<stNode*>::iterator iter = list->begin(); iter != list->end(); ++iter) {
+	for (CLinkedList<stNode*>::iterator iter = list->begin(); iter != list->end(); ++iter) {
 		stCoord* coordInList = (*iter)->_coord;
 		if (coordInList->_y == coord->_y  && coordInList->_x == coord->_x) {
 			return true;
@@ -96,6 +98,10 @@ void CJumpPointSearch::makeNode(stCoord* corner, stNode* parent) {
 	new (*newNode) stNode(parent, moveCnt, distance, corner);
 
 	_openList->push_back(*newNode);
+	if((*newNode)->_coord->_x == 46 && (*newNode)->_coord->_y == 23){
+		int k = 1;
+	}
+	//_openList->insert(*newNode);
 
 }
 
@@ -105,9 +111,16 @@ CJumpPointSearch::stNode* CJumpPointSearch::pathFindSingleLoop() {
 		sp->profileBegin("singleLoop");
 	#endif
 
-	linkedList<stNode*>::iterator minIter = *findMin(_openList);
+	CLinkedList<stNode*>::iterator minIter = *findMin(_openList);
+	//stNode* minNode = findMin(_openList);
 	stNode* selectNode = *minIter;
+	//stNode* selectNode = minNode;
+	//_openList->erase(minNode);
 	_openList->erase(minIter);
+
+	if(selectNode->_coord->_x == 46 && selectNode->_coord->_y == 23){
+		int k =1;
+	}
 
 	stCoord* coord = selectNode->_coord;
 
@@ -667,11 +680,11 @@ CJumpPointSearch::stCoord* CJumpPointSearch::checkDiagonal(DIRECTION dir, int y,
 	return nullptr;
 }
 
-linkedList<CJumpPointSearch::stNode*>::iterator* CJumpPointSearch::findMin(linkedList<stNode*>* list) {
+CLinkedList<CJumpPointSearch::stNode*>::iterator* CJumpPointSearch::findMin(CLinkedList<stNode*>* list) {
 
 	int minValue = 0x7FFFFFFF;
-	linkedList<stNode*>::iterator minIter;
-	for (linkedList<stNode*>::iterator iter = list->begin(); iter != list->end(); ++iter) {
+	CLinkedList<stNode*>::iterator minIter;
+	for (CLinkedList<stNode*>::iterator iter = list->begin(); iter != list->end(); ++iter) {
 		int distance = (*iter)->_distance;
 		int moveCnt = (*iter)->_moveCnt;
 		int fValue = distance + moveCnt;
@@ -682,6 +695,30 @@ linkedList<CJumpPointSearch::stNode*>::iterator* CJumpPointSearch::findMin(linke
 	}
 
 	return &minIter;
+}
+
+CJumpPointSearch::stNode* CJumpPointSearch::findMin(CRedBlackTree_Multi<CJumpPointSearch::stNode*, CJpsLess>* list){
+
+	CRedBlackTree_Multi<CJumpPointSearch::stNode*, CJpsLess>::stNode* node = list->_root;
+
+	if(node == nullptr){
+		return nullptr;
+	}
+
+	while(node->_isNill != true){
+
+
+		if(node->_left->_isNill == true){
+			return node->_dataList->begin()->value;
+		}
+
+		node = node->_left;
+
+	}
+
+	return nullptr;
+
+
 }
 
 #ifdef _WINDOWS_
@@ -740,13 +777,27 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 
 
 
-	{
+	do{
 		// 오픈 리스트 그리기
+
+		if (_openList->empty() == true) {
+			break;
+		}
 
 		HBRUSH hBrush = CreateSolidBrush(RGB(150, 210, 230));
 		HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hBrush);
 		
-		for (linkedList<stNode*>::iterator iter = _openList->begin(); iter != _openList->end(); ++iter) {
+		//stNode** arr = _openList->inorder();
+		//stNode** arrEnd = arr + _openList->getNodeNum();
+		//stNode** arrIter = arr;
+
+		//for (; arrIter != arrEnd; ++arrIter){
+
+		//  stCoord* coord = (*arrIter)->_coord;
+
+		CLinkedList<stNode*>::iterator iter = _openList->begin();
+
+		for(; iter != _openList->end(); ++iter){
 
 			stCoord* coord = (*iter)->_coord;
 			int y = coord->_y;
@@ -762,7 +813,7 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 
 		SelectObject(hdc, hOldBrush);
 		DeleteObject(hBrush);
-	}
+	}while(false);
 
 	{
 		// 클로즈 리스트 그리기
@@ -874,31 +925,22 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 		HPEN hPen = CreatePen(PS_SOLID, blockSize / 8, RGB(190, 110, 190));
 		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
-		if (_closeList->empty() == false) {
-			for (linkedList<stNode*>::iterator iter = _closeList->begin(); iter != _closeList->end(); ++iter) {
-
-				if ((*iter)->_parent == nullptr) {
-					continue;
-				}
-
-				stCoord* coord = (*iter)->_coord;
-				stCoord* parentCoord = (*iter)->_parent->_coord;
-
-				MoveToEx(hdc, coord->_x * blockSize + blockSize / 2, coord->_y* blockSize + blockSize / 2, nullptr);
-				LineTo(hdc, parentCoord->_x* blockSize + blockSize / 2, parentCoord->_y* blockSize + blockSize / 2);
-
-			}
-		}
-
 		if (_openList->empty() == false) {
-			for (linkedList<stNode*>::iterator iter = _openList->begin(); iter != _openList->end(); ++iter) {
 
-				if ((*iter)->_parent == nullptr) {
-					continue;
-				}
+			CLinkedList<stNode*>::iterator iter = _openList->begin();
+
+			for (; iter != _openList->end(); ++iter) {
 
 				stCoord* coord = (*iter)->_coord;
 				stCoord* parentCoord = (*iter)->_parent->_coord;
+				/*
+				if ((*arrIter)->_parent == nullptr) {
+					continue;
+				}
+
+				stCoord* coord = (*arrIter)->_coord;
+				stCoord* parentCoord = (*arrIter)->_parent->_coord;
+				*/
 
 				MoveToEx(hdc, coord->_x * blockSize + blockSize / 2, coord->_y * blockSize + blockSize / 2, nullptr);
 				LineTo(hdc, parentCoord->_x * blockSize + blockSize / 2, parentCoord->_y * blockSize + blockSize / 2);
@@ -938,8 +980,9 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
 		if (endNodeIter != pathEnd()) {
-
-			for(iterator nodeIter = pathBegin() + 1; nodeIter != pathEnd(); ++nodeIter) {
+			iterator nodeIter = pathBegin();
+			++nodeIter;
+			for(; nodeIter != pathEnd(); ++nodeIter) {
 				stNode* node = *nodeIter;
 
 				stCoord* coord = node->_coord;
@@ -987,9 +1030,9 @@ void CJumpPointSearch::print(HDC hdc, int blockSize, iterator endNodeIter) {
 
 void CJumpPointSearch::listClear() {
 
-
 	_openList->clear();
-	_closeList->clear();
+	//_openList->~CRedBlackTree_Multi();
+	new (_openList) CRedBlackTree_Multi<stNode*, CJpsLess>(CJpsLess());
 
 	for (int heightCnt = 0; heightCnt < _height; ++heightCnt) {
 		for (int widthCnt = 0; widthCnt < _width; ++widthCnt) {
@@ -1209,36 +1252,47 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 	}
 
 	// 오픈 리스트 노드 출력
+	do{
 
-	for (linkedList<stNode*>::iterator iter = _openList->begin(); iter != _openList->end(); ++iter) {
-		int nodeX = (*iter)->_coord->_x * printRatio;
-		int nodeY = (_height - 1 - (*iter)->_coord->_y) * printRatio;
-
-		for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
-			nodeX = (*iter)->_coord->_x * printRatio + printRatio / 2 - heightRatioCnt;
-			for (int widthRatioCnt = 0; widthRatioCnt < heightRatioCnt * 2 - 1; ++widthRatioCnt) {
-				stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
-				rgb->red = 150;
-				rgb->green = 210;
-				rgb->blue = 230;
-			}
+		if(_openList->empty() == true){
+			break;
 		}
 
-		nodeY += printRatio / 2;
+		CLinkedList<stNode*>::iterator iter = _openList->begin();
+		for (; iter != _openList->end(); ++iter) {
 
-		for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
-			nodeX = (*iter)->_coord->_x * printRatio + heightRatioCnt;
-			for (int widthRatioCnt = 0; widthRatioCnt < (printRatio / 2 - 1 - heightRatioCnt) * 2 - 1; ++widthRatioCnt) {
-				stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
-				rgb->red = 150;
-				rgb->green = 210;
-				rgb->blue = 230;
+			//int nodeX = (*arrIter)->_coord->_x * printRatio;
+			int nodeX = (*iter)->_coord->_x * printRatio;
+			//int nodeY = (_height - 1 - (*arrIter)->_coord->_y) * printRatio;
+			int nodeY = (_height - 1 - (*iter)->_coord->_y) * printRatio;
+
+			for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
+				//nodeX = (*arrIter)->_coord->_x * printRatio + printRatio / 2 - heightRatioCnt;
+				nodeX = (*iter)->_coord->_x * printRatio + printRatio / 2 - heightRatioCnt;
+				for (int widthRatioCnt = 0; widthRatioCnt < heightRatioCnt * 2 - 1; ++widthRatioCnt) {
+					stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
+					rgb->red = 150;
+					rgb->green = 210;
+					rgb->blue = 230;
+				}
 			}
+
+			nodeY += printRatio / 2;
+
+			for (int heightRatioCnt = 1; heightRatioCnt <= printRatio / 2; ++heightRatioCnt) {
+				//nodeX = (*arrIter)->_coord->_x * printRatio + heightRatioCnt;
+				nodeX = (*iter)->_coord->_x * printRatio + heightRatioCnt;
+				for (int widthRatioCnt = 0; widthRatioCnt < (printRatio / 2 - 1 - heightRatioCnt) * 2 - 1; ++widthRatioCnt) {
+					stReverseRGB* rgb = &rgbData[(nodeY + heightRatioCnt) * (_width * printRatio) + nodeX + widthRatioCnt];
+					rgb->red = 150;
+					rgb->green = 210;
+					rgb->blue = 230;
+				}
+			}
+
 		}
 
-	}
-
-	
+	}while(false);
 
 	// 경로 출력
 	do {
@@ -1246,8 +1300,10 @@ void CJumpPointSearch::printToBitmap(const WCHAR* fileName, const int printRatio
 		if (endNodeIter == pathEnd()) {
 			break;
 		}
-
-		for(iterator nodeIter = pathBegin() + 1; nodeIter != pathEnd(); ++nodeIter) {
+		
+		iterator nodeIter = pathBegin();
+		++nodeIter;
+		for(; nodeIter != pathEnd(); ++nodeIter) {
 
 			stNode* node = *nodeIter;
 
@@ -1616,7 +1672,7 @@ void CJumpPointSearch::nodeSkip() {
 
 		lineTo(startCoord->_x, startCoord->_y, findCoord->_x, findCoord->_y);
 
-		for (linkedList<stNode*>::iterator lineCoordIter = _line->begin(); lineCoordIter != _line->end(); ++lineCoordIter) {
+		for (CLinkedList<stNode*>::iterator lineCoordIter = _line->begin(); lineCoordIter != _line->end(); ++lineCoordIter) {
 
 			stCoord* coord = (*lineCoordIter)->_coord;
 			stRGB* rgb = lineColor(coord->_y, coord->_x);

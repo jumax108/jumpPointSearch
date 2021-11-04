@@ -1,4 +1,6 @@
 
+class CJpsLess;
+
 template<typename T>
 class CObjectFreeList;
 
@@ -70,7 +72,7 @@ public:
 	class iterator {
 		friend class CJumpPointSearch;
 	public:
-		iterator(linkedList<stNode*>::iterator pathIter) {
+		iterator(CLinkedList<stNode*>::iterator pathIter) {
 			_pathIter = pathIter;
 		}
 		iterator() {}
@@ -99,7 +101,7 @@ public:
 		}
 
 	private:
-		linkedList<stNode*>::iterator _pathIter;
+		CLinkedList<stNode*>::iterator _pathIter;
 	};
 
 public:
@@ -152,22 +154,23 @@ public:
 
 #endif
 
-	inline linkedList<stNode*>::iterator pathEnd() {
+	inline CLinkedList<stNode*>::iterator pathEnd() {
 		return _path->end();
 	}
 
-	inline linkedList<stNode*>::iterator pathBegin() {
+	inline CLinkedList<stNode*>::iterator pathBegin() {
 		return _path->begin();
 	}
 
-	inline linkedList<stNode*>::iterator lineEnd() {
+	inline CLinkedList<stNode*>::iterator lineEnd() {
 		return _line->end();
 	}
 
-	inline linkedList<stNode*>::iterator lineBegin() {
+	inline CLinkedList<stNode*>::iterator lineBegin() {
 		return _line->begin();
 	}
 
+	//bool lessCompare(stNode*, stNode*);
 private:
 
 	MAP_STATE* _map;
@@ -178,19 +181,34 @@ private:
 	stRGB* _mapColor;
 	stRGB* _lineColor;
 
-	linkedList<stNode*>* _openList;
-	linkedList<stNode*>* _closeList;
-	linkedList<stNode*>* _path;
-	linkedList<stNode*>* _line;
+	CLinkedList<stNode*>* _openList;
+	//CRedBlackTree_Multi<stNode*, CJpsLess>* _openList;
+
+	CLinkedList<stNode*>* _path;
+	CLinkedList<stNode*>* _line;
 
 	CObjectFreeList<stNode>* nodeFreeList;
 	CObjectFreeList<stCoord>* coordFreeList;
 
-	linkedList<stNode*>::iterator* findMin(linkedList<stNode*>* list);
+
+	CLinkedList<stNode*>::iterator* findMin(CLinkedList<stNode*>* list);
+	stNode* findMin(CRedBlackTree_Multi<stNode*, CJpsLess>* list);
 
 	stCoord* checkOrthogonal(DIRECTION dir, int y , int x, const stRGB* color);
 	stCoord* checkDiagonal(DIRECTION dir, int y, int x, const stRGB* color);
 
-	bool isNodeInList(stCoord* coord, linkedList<stNode*>* list);
+	bool isNodeInList(stCoord* coord, CLinkedList<stNode*>* list);
 
 };
+
+class CJpsLess{
+public:
+	bool operator()(CJumpPointSearch::stNode* left, CJumpPointSearch::stNode* right){
+
+		int leftFValue = left->_distance + left->_moveCnt;
+		int rightFValue = right->_distance + right->_moveCnt;
+
+		return leftFValue < rightFValue;
+	}
+};
+

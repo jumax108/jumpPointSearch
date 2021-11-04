@@ -1,7 +1,7 @@
                 Name |         Average |             Min |             Max |            Call 
-     JumpPointSearch |      170.086 us |      102.600 us |      371.000 us |             198 
-          singleLoop |        1.075 us |        0.300 us |       34.400 us |           26477 
-     checkOrthogonal |        0.074 us |        0.000 us |       20.900 us |           81325 
-       checkDiagonal |        0.180 us |        0.000 us |       21.000 us |           44235 
-            nodeSkip |      453.337 us |      277.700 us |      818.200 us |             198 
-              lineTo |        0.492 us |        0.000 us |      858.600 us |          306580 
+     JumpPointSearch |      174.707 us |      103.500 us |      339.600 us |             198 
+          singleLoop |        1.026 us |        0.200 us |       33.900 us |           26477 
+     checkOrthogonal |        0.071 us |        0.000 us |        5.700 us |           81325 
+       checkDiagonal |        0.177 us |        0.000 us |        4.100 us |           44235 
+            nodeSkip |      476.977 us |      295.500 us |      797.700 us |             198 
+              lineTo |        0.489 us |        0.000 us |      653.500 us |          306580 

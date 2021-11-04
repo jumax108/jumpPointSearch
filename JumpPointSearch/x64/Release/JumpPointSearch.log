@@ -1,55 +1,58 @@
 ﻿  JumpPointSearch.cpp
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1017,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1017,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(202,37): warning C4244: '=': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(186): message : 클래스 템플릿 멤버 함수 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'을(를) 컴파일하는 중입니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(43): message : 컴파일되는 함수 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'에 대한 참조를 확인하세요.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(43): message : 컴파일되는 클래스 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'CLinkedList<T>::_node'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(122): message : 컴파일되는 클래스 템플릿 인스턴스화 'CLinkedList<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(74,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(77,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(81,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(154,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(167,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree_Multi.h(155): warning C5037: 'CRedBlackTree_Multi<T,C>::allocNode': 클래스 템플릿 멤버의 확장 정의에는 기본 인수가 포함될 수 없습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1060,33): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(1060,33): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(203,37): warning C4244: '=': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(187): message : 클래스 템플릿 멤버 함수 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'을(를) 컴파일하는 중입니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(44): message : 컴파일되는 함수 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(44): message : 컴파일되는 클래스 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>'에 대한 참조를 확인하세요.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(160,30): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(146): message : 컴파일되는 함수 템플릿 인스턴스화 'void CAllocList::resize<T>(void)'에 대한 참조를 확인하세요.
           with
           [
               T=CJumpPointSearch::stNode
           ]
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(350): message : 컴파일되는 함수 템플릿 인스턴스화 'void CAllocList::push<T>(void *)'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(351): message : 컴파일되는 함수 템플릿 인스턴스화 'void CAllocList::push<T>(void *)'에 대한 참조를 확인하세요.
           with
           [
               T=CJumpPointSearch::stNode
           ]
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(335): message : 클래스 템플릿 멤버 함수 'stAllocNode<T> *CObjectFreeList<T>::actualArrayAlloc(int)'을(를) 컴파일하는 중입니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(336): message : 클래스 템플릿 멤버 함수 'stAllocNode<T> *CObjectFreeList<T>::actualArrayAlloc(int)'을(를) 컴파일하는 중입니다.
           with
           [
               T=CJumpPointSearch::stNode
           ]
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(200): message : 컴파일되는 함수 템플릿 인스턴스화 'stAllocNode<T> *CObjectFreeList<T>::actualArrayAlloc(int)'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(201): message : 컴파일되는 함수 템플릿 인스턴스화 'stAllocNode<T> *CObjectFreeList<T>::actualArrayAlloc(int)'에 대한 참조를 확인하세요.
           with
           [
               T=CJumpPointSearch::stNode
           ]
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(186): message : 클래스 템플릿 멤버 함수 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'을(를) 컴파일하는 중입니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(43): message : 컴파일되는 함수 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\ObjectFreeList.h(187): message : 클래스 템플릿 멤버 함수 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'을(를) 컴파일하는 중입니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(44): message : 컴파일되는 함수 템플릿 인스턴스화 'CObjectFreeList<CJumpPointSearch::stNode>::CObjectFreeList(int)'에 대한 참조를 확인하세요.
   main.cpp
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>::_node'에 대한 참조를 확인하세요.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(132): message : 컴파일되는 클래스 템플릿 인스턴스화 'linkedList<T>'에 대한 참조를 확인하세요.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(82,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(85,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(89,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(181,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
-C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\myLinkedList.h(194,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(20,1): warning C4227: 오래된 구문을 사용했습니다. 참조의 한정자가 무시됩니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(21): message : 컴파일되는 클래스 템플릿 인스턴스화 'CLinkedList<T>::_node'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(122): message : 컴파일되는 클래스 템플릿 인스턴스화 'CLinkedList<T>'에 대한 참조를 확인하세요.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(74,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(77,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(81,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(154,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\linkedList.h(167,1): warning C4114: 동일한 형식 한정자를 두 번 이상 사용했습니다.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\RedBlackTree_Multi.h(155): warning C5037: 'CRedBlackTree_Multi<T,C>::allocNode': 클래스 템플릿 멤버의 확장 정의에는 기본 인수가 포함될 수 없습니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(178,12): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
 C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\main.cpp(178,12): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
   코드를 생성하고 있습니다.
-  0 of 98 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+C:\Users\jhmax\Desktop\Github\JumpPointSearch\JumpPointSearch\JumpPointSearch.cpp(697): warning C4172: 지역 변수 또는 임시: minIter의 주소를 반환하고 있습니다.
+  18 of 118 functions (15.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    19 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   JumpPointSearch.vcxproj -> C:\Users\jhmax\Desktop\Github\JumpPointSearch\x64\Release\JumpPointSearch.exe

@@ -212,9 +212,9 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="JumpPointSearch.h" />
-    <ClInclude Include="myLinkedList.h" />
+    <ClInclude Include="linkedList.h" />
     <ClInclude Include="ObjectFreeList.h" />
-    <ClInclude Include="RedBlackTree.h" />
+    <ClInclude Include="RedBlackTree_Multi.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleProfiler.h" />
     <ClInclude Include="targetver.h" />

@@ -174,7 +174,8 @@ void CAllocList::resize() {
 		unsigned int arrPtr = (unsigned int)&_arr[arrCnt];
 #endif
 
-		node->allocListPtr = (void**)(arrPtr | firstBit);
+		node->allocListPtr = (void**)(arrPtr);//(void**)(arrPtr | firstBit);
+		*(node->allocListPtr) = (void*)(nodePtr | firstBit);
 
 		//((stAllocNode<T>*)(_arr[arrCnt]))->allocListPtr = &_arr[arrCnt];
 	}
@@ -260,7 +261,7 @@ T* CObjectFreeList<T>::_allocObject(const wchar_t* fileName, int line) {
 	ptrTemp |= 0x80000000;
 #endif
 
-	* (allocNode->allocListPtr) = (void*)ptrTemp;
+	(*(allocNode->allocListPtr)) = (void*)ptrTemp;
 
 	allocNode->allocSourceFileName = fileName;
 	allocNode->allocLine = line;
